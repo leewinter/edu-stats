@@ -4,6 +4,12 @@ Stage: Storybook + Ant Design scaffold
 
 This package contains the shared React component library consumed by client applications. Components are authored in TypeScript, styled via Ant Design, and bundled with `tsup` for CJS/ESM consumers.
 
+## Available components
+
+- `StatisticsCard` – summary metric tile with title/value/trend label support.
+- `InstitutionsTable` – standardized Ant Design table markup for institution listings, including optional row-level edit action wiring.
+- `InstitutionFormModal` – form-in-a-modal for creating/editing institution records with validation baked in.
+
 ## Commands
 
 ```bash
