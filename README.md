@@ -81,7 +81,7 @@ The provided `docker-compose.yml` wires up the shared infrastructure and placeho
    ```
 2. **Apply EF Core migrations** whenever schema changes:
    ```bash
-   docker compose run --rm --profile migrate migrator
+   docker compose --profile migrate run --rm migrator
    ```
 3. **Launch Portainer if needed** (skip if you already have an instance on the host):
    ```bash
