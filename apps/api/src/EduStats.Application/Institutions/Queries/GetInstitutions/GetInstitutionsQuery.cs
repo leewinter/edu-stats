@@ -1,3 +1,4 @@
+using System.Linq;
 using EduStats.Application.Common.Interfaces;
 using EduStats.Application.Common.Models;
 using EduStats.Application.Institutions.Dtos;
@@ -30,6 +31,16 @@ public sealed class GetInstitutionsQueryHandler : IRequestHandler<GetInstitution
         return new PagedResult<InstitutionDto>(dtos, totalCount, pageNumber, pageSize);
     }
 
-    private static InstitutionDto ToDto(Institution institution) =>
-        new(institution.Id, institution.Name, institution.Country, institution.County, institution.Enrollment);
+    private static InstitutionDto ToDto(Institution institution)
+    {
+        var addresses = institution.Addresses
+            .Select(address => new InstitutionAddressDto(address.Line1, address.Line2, address.City, address.County, address.Country, address.PostalCode))
+            .ToArray();
+
+        var primaryAddress = addresses.FirstOrDefault();
+        var country = primaryAddress?.Country ?? string.Empty;
+        var county = primaryAddress?.County ?? string.Empty;
+
+        return new InstitutionDto(institution.Id, institution.Name, country, county, institution.Enrollment, addresses);
+    }
 }

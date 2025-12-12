@@ -3,6 +3,7 @@ import { Layout, Typography, Space, Alert, Button } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   InstitutionFormModal,
+  type InstitutionFormValues,
   InstitutionsTable,
   StatisticsCard
 } from "@edu-stats/ui";
@@ -56,14 +57,16 @@ function App() {
     setModalState(null);
   }
 
-  const handleSubmit = async (values: InstitutionInput) => {
+  const handleSubmit = async (values: InstitutionFormValues) => {
+    const payload = mapFormValuesToInput(values);
+
     if (modalState?.mode === "edit" && modalState.institution) {
       await updateInstitutionMutation.mutateAsync({
         id: modalState.institution.id,
-        payload: values
+        payload
       });
     } else {
-      await createInstitutionMutation.mutateAsync(values);
+      await createInstitutionMutation.mutateAsync(payload);
     }
   };
 
@@ -140,12 +143,7 @@ function App() {
         errorMessage={mutationErrorMessage}
         initialValues={
           modalState?.mode === "edit" && modalState.institution
-            ? {
-                name: modalState.institution.name,
-                country: modalState.institution.country,
-                county: modalState.institution.county,
-                enrollment: modalState.institution.enrollment
-              }
+            ? mapInstitutionToFormValues(modalState.institution)
             : undefined
         }
         onCancel={handleCloseModal}
@@ -156,3 +154,65 @@ function App() {
 }
 
 export default App;
+
+function mapFormValuesToInput(values: InstitutionFormValues): InstitutionInput {
+  const sanitizedAddresses = (values.addresses ?? [])
+    .map((address) => ({
+      line1: address.line1.trim(),
+      line2: address.line2?.trim() || undefined,
+      city: address.city.trim(),
+      county: address.county.trim(),
+      country: address.country.trim(),
+      postalCode: address.postalCode.trim()
+    }))
+    .filter(
+      (address) =>
+        address.line1 && address.city && address.county && address.country && address.postalCode
+    );
+
+  if (sanitizedAddresses.length === 0) {
+    sanitizedAddresses.push({
+      line1: values.name,
+      line2: undefined,
+      city: "",
+      county: "",
+      country: "",
+      postalCode: ""
+    });
+  }
+
+  return {
+    name: values.name,
+    enrollment: values.enrollment,
+    addresses: sanitizedAddresses
+  };
+}
+
+function mapInstitutionToFormValues(institution: Institution): InstitutionFormValues {
+  const addresses =
+    institution.addresses.length > 0
+      ? institution.addresses
+      : [
+          {
+            line1: "",
+            line2: "",
+            city: "",
+            county: "",
+            country: "",
+            postalCode: ""
+          }
+        ];
+
+  return {
+    name: institution.name,
+    enrollment: institution.enrollment,
+    addresses: addresses.map((address) => ({
+      line1: address.line1,
+      line2: address.line2 ?? "",
+      city: address.city,
+      county: address.county,
+      country: address.country ?? "",
+      postalCode: address.postalCode
+    }))
+  };
+}

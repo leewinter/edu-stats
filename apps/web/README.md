@@ -30,6 +30,7 @@ npm run dev      # tsup watch (writes to dist/)
 npm run build    # one-off build before docker compose up or CI builds
 ```
 
+The `InstitutionFormModal` component now captures the canonical campus address (line/city/county/country/postcode). Institution-level country/county fields were removed, so any display logic should derive those values from `addresses[0]`.
 ## End-to-end smoke test
 
 The Playwright suite in `apps/web/tests` exercises the institutions dashboard and verifies that seeded data renders end to end.
