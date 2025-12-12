@@ -5,6 +5,7 @@ services:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
+      target: api
     image: edu-stats/api:dev
     depends_on:
       postgres:
@@ -15,12 +16,11 @@ services:
       ASPNETCORE_URLS: http://+:8080
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Main: Host=postgres;Port=5432;Database=edu_stats;Username=app;Password=app
+      Database__RunMigrationsOnStartup: "true"
       MessageBroker__Host: amqp://rabbitmq:5672
       Cache__Host: redis:6379
     ports:
       - "8080:8080"
-    volumes:
-      - ./apps/api:/app
     restart: unless-stopped
 
   client:
@@ -76,8 +76,8 @@ services:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
+      target: migrator
     image: edu-stats/api-migrator:dev
-    command: ["dotnet", "ef", "database", "update"]
     depends_on:
       postgres:
         condition: service_healthy
