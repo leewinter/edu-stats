@@ -4,7 +4,7 @@ export interface Institution {
   id: string;
   name: string;
   country: string;
-  stateProvince: string;
+  county: string;
   enrollment: number;
 }
 

@@ -31,5 +31,5 @@ public sealed class GetInstitutionsQueryHandler : IRequestHandler<GetInstitution
     }
 
     private static InstitutionDto ToDto(Institution institution) =>
-        new(institution.Id, institution.Name, institution.Country, institution.StateProvince, institution.Enrollment);
+        new(institution.Id, institution.Name, institution.Country, institution.County, institution.Enrollment);
 }

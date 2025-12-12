@@ -15,7 +15,7 @@ const columns: ColumnsType<Institution> = [
       <div>
         <Typography.Text strong>{text}</Typography.Text>
         <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-          {record.stateProvince}, {record.country}
+          {record.county}, {record.country}
         </Typography.Paragraph>
       </div>
     )

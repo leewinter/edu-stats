@@ -6,22 +6,22 @@ public sealed class Institution : AuditableEntity<Guid>, IAggregateRoot
 {
     public string Name { get; private set; }
     public string Country { get; private set; }
-    public string StateProvince { get; private set; }
+    public string County { get; private set; }
     public int Enrollment { get; private set; }
 
     private Institution()
     {
         Name = string.Empty;
         Country = string.Empty;
-        StateProvince = string.Empty;
+        County = string.Empty;
     }
 
-    public Institution(string name, string country, string stateProvince, int enrollment)
+    public Institution(string name, string country, string county, int enrollment)
     {
         Id = Guid.NewGuid();
         Name = name;
         Country = country;
-        StateProvince = stateProvince;
+        County = county;
         Enrollment = enrollment;
     }
 
@@ -30,11 +30,11 @@ public sealed class Institution : AuditableEntity<Guid>, IAggregateRoot
         Enrollment = enrollment;
     }
 
-    public void Update(string name, string country, string stateProvince, int enrollment)
+    public void Update(string name, string country, string county, int enrollment)
     {
         Name = name;
         Country = country;
-        StateProvince = stateProvince;
+        County = county;
         Enrollment = enrollment;
     }
 }

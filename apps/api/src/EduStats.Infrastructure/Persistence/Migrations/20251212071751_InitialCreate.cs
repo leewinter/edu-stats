@@ -16,9 +16,9 @@ namespace EduStats.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    Country = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    StateProvince = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                Country = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                County = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     Enrollment = table.Column<int>(type: "integer", nullable: false),
                     created_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),

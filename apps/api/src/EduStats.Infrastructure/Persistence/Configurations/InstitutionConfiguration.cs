@@ -19,7 +19,7 @@ public sealed class InstitutionConfiguration : IEntityTypeConfiguration<Institut
             .IsRequired()
             .HasMaxLength(128);
 
-        builder.Property(x => x.StateProvince)
+        builder.Property(x => x.County)
             .HasMaxLength(128);
 
         builder.Property(x => x.Enrollment);

@@ -5,7 +5,7 @@ using MediatR;
 
 namespace EduStats.Application.Institutions.Commands.UpdateInstitution;
 
-public sealed record UpdateInstitutionCommand(Guid Id, string Name, string Country, string StateProvince, int Enrollment) : IRequest;
+public sealed record UpdateInstitutionCommand(Guid Id, string Name, string Country, string County, int Enrollment) : IRequest;
 
 public sealed class UpdateInstitutionCommandHandler : IRequestHandler<UpdateInstitutionCommand>
 {
@@ -25,12 +25,12 @@ public sealed class UpdateInstitutionCommandHandler : IRequestHandler<UpdateInst
         var institution = await _repository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new InvalidOperationException($"Institution {request.Id} was not found");
 
-        institution.Update(request.Name, request.Country, request.StateProvince, request.Enrollment);
+        institution.Update(request.Name, request.Country, request.County, request.Enrollment);
 
         await _repository.UpdateAsync(institution, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var @event = new InstitutionChangedEvent(institution.Id, institution.Name, institution.Country, institution.StateProvince, institution.Enrollment, "Updated");
+        var @event = new InstitutionChangedEvent(institution.Id, institution.Name, institution.Country, institution.County, institution.Enrollment, "Updated");
         await _eventPublisher.PublishAsync(@event, routingKey: "institutions.updated", cancellationToken);
 
         return Unit.Value;

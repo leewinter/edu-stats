@@ -49,7 +49,7 @@ namespace EduStats.Infrastructure.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("StateProvince")
+                    b.Property<string>("County")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
