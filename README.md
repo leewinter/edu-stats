@@ -114,7 +114,9 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
 ## Frontend status
 
 - `apps/web` is a Vite + React (TS) client that uses TanStack Query, Ant Design, and shared UI primitives. `npm run dev` starts the UI on http://localhost:4173.
+- The dashboard now offers inline create/edit flows for institutions: use the **Add institution** button or row-level **Edit** action, complete the Ant Design form, and the list auto-refreshes via React Query invalidation.
 - `packages/ui` is a standalone component library (tsup build) plus a Vite-powered Storybook (`npm run storybook` in that folder).
+- Shared UI primitives (`StatisticsCard`, `InstitutionsTable`, `InstitutionFormModal`) live inside `packages/ui`, so downstream apps can consume a consistent presentation layer.
 - Run `npm run dev` (watch) or `npm run build` inside `packages/ui` so `dist/` stays fresh—Vite resolves `@edu-stats/ui` to that output for both dev and build flows.
 - `.env.example` inside `apps/web` lists `VITE_API_BASE_URL` which defaults to `http://localhost:8080`; the client hits `/api/institutions` on that host.
 - Playwright smoke tests (`npm run test:e2e` from repo root) verify the dashboard renders seeded institutions once the stack is up.
