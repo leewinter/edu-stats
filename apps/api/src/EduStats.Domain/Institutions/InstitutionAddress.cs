@@ -1,3 +1,4 @@
+using System;
 using EduStats.Domain.Common;
 
 namespace EduStats.Domain.Institutions;
@@ -25,6 +26,7 @@ public sealed class InstitutionAddress : AuditableEntity<Guid>
 
     public InstitutionAddress(string line1, string? line2, string city, string county, string country, string postalCode)
     {
+        Id = Guid.NewGuid();
         Line1 = line1;
         Line2 = line2;
         City = city;

@@ -9,7 +9,7 @@ export interface InstitutionAddress {
   postalCode: string;
 }
 
-export interface InstitutionAddressInput extends InstitutionAddress {}
+export type InstitutionAddressInput = InstitutionAddress;
 
 export interface Institution {
   id: string;

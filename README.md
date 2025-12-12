@@ -101,6 +101,12 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
 - **Docs:** each project folder keeps a `README.md` that documents its stage and next todos; update them whenever milestone changes.
 - **Tests:** add unit tests alongside features, and wire e2e tests once the full Compose stack is usable locally.
 
+## Tests
+
+- **API:** `cd apps/api && dotnet test` runs the solution tests (currently validator + domain coverage).
+- **Web:** `cd apps/web && npm run lint && npm run typecheck`.
+- **CI:** `.github/workflows/ci.yml` runs both suites on every push/PR.
+
 ## Backend status
 
 - `apps/api/EduStats.sln` hosts the API stack with four projects: `EduStats.Domain`, `EduStats.Application`, `EduStats.Infrastructure`, and `EduStats.Api`.
