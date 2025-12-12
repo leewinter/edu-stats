@@ -26,3 +26,6 @@ export type {
   CourseFormModalProps,
   CourseFormValues
 } from "./components/CourseFormModal";
+
+export { NavigationHeader } from "./components/NavigationHeader";
+export type { NavigationHeaderProps } from "./components/NavigationHeader";

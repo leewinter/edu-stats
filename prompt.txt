@@ -1,0 +1,21 @@
+I need to build a new system designed to repot off a sql database with big data. The data is information about higher education statistics.
+
+I would like the api layer to be .net
+
+I would like the client to be react. I would like my components in a separate component library. I think some client cache makes sense like tanstack
+
+I would like the database to be sql server, mysql, or postgress (Im going to use ef core). 
+I would like the database hosted via a docker container for simplicity. 
+I expect I'll use the repository pattern (generic base repo) with unit of work .
+I want the database to be setup via migrations from scratch, and maintained this way. For dev purpose it would be nice for each table to have a seed script that helps for testing
+
+Since the data could be big I would like event driven architecture. Possibly CQRS with some sort of cache
+
+I would like the whole project span up via docker compose for simplicity
+
+As I go I would like to ensure all projects in my monorepo have readme markdown files documenting the stages
+
+I would like to use git imperative commits and tackle each part of the system in small feature branches
+
+I want unit tests where possible and e2e tests when I have a docker compose for eveything.
+Is it also possible to add portainer to the docker compose and only spin it up if an instance of portainer isnt already running on the machine already?
