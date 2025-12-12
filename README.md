@@ -1,4 +1,4 @@
-# edu-stats platform
+ï»¿# edu-stats platform
 
 Higher-education analytics stack built with a .NET API, a React client, shared component library, and event-driven data services orchestrated through Docker Compose.
 
@@ -53,11 +53,11 @@ flowchart LR
 
 ## Monorepo layout (planned)
 
-- `apps/api` – ASP.NET Core solution with Domain/Application/Infrastructure layers, EF Core migrations, repository/unit-of-work implementation, and migration + seeding tooling.
-- `apps/web` – React app (Vite) that consumes the API and TanStack Query for caching.
-- `packages/ui` – Isolated component library shared across clients.
-- `packages/testing` – Cross-cutting test utilities (mock servers, API contracts, data builders).
-- `infra/` – IaC snippets, additional compose overrides, seed data, and operational runbooks.
+- `apps/api` â€“ ASP.NET Core solution with Domain/Application/Infrastructure layers, EF Core migrations, repository/unit-of-work implementation, and migration + seeding tooling.
+- `apps/web` â€“ React app (Vite) that consumes the API and TanStack Query for caching.
+- `packages/ui` â€“ Isolated component library shared across clients.
+- `packages/testing` â€“ Cross-cutting test utilities (mock servers, API contracts, data builders).
+- `infra/` â€“ IaC snippets, additional compose overrides, seed data, and operational runbooks.
 
 Each project will gain its own `README.md` as features evolve, documenting decisions and commands relevant to that slice.
 
@@ -93,3 +93,11 @@ The provided `docker-compose.yml` wires up the shared infrastructure and placeho
    ```
 
 Future steps will add scripted data seeds per table, CI hooks for imperative commits, test harnesses, and documentation updates per project as they are created.
+
+## Working agreement
+
+- **Branches:** every feature lives on its own branch (e.g., `feat/api-scaffold`). Merge to `main` via PR after review.
+- **Commits:** prefer imperative Conventional Commits (`feat: add seed runner`, `chore: align lint config`).
+- **Docs:** each project folder keeps a `README.md` that documents its stage and next todos; update them whenever milestone changes.
+- **Tests:** add unit tests alongside features, and wire e2e tests once the full Compose stack is usable locally.
+
