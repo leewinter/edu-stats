@@ -17,7 +17,11 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Main: Host=postgres;Port=5432;Database=edu_stats;Username=app;Password=app
       Database__RunMigrationsOnStartup: "true"
-      MessageBroker__Host: amqp://rabbitmq:5672
+      MessageBroker__HostName: rabbitmq
+      MessageBroker__Port: 5672
+      MessageBroker__UserName: app
+      MessageBroker__Password: app
+      MessageBroker__VirtualHost: /
       Cache__Host: redis:6379
     ports:
       - "8080:8080"

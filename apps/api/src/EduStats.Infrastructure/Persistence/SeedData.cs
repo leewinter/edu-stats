@@ -15,11 +15,11 @@ public static class SeedData
 
         var institutions = new List<Institution>
         {
-            new("Northwind University", "USA", "WA", 12000),
-            new("Contoso College", "USA", "NY", 9000),
-            new("Fabrikam Institute", "Canada", "ON", 15000),
-            new("Tailspin Tech", "Australia", "NSW", 6000),
-            new("Adventure Works Academy", "UK", "England", 11000)
+            new("University of Oxford", "UK", "Oxfordshire", 24000),
+            new("University of Cambridge", "UK", "Cambridgeshire", 22000),
+            new("Imperial College London", "UK", "Greater London", 19000),
+            new("University of Edinburgh", "UK", "City of Edinburgh", 33000),
+            new("University of Manchester", "UK", "Greater Manchester", 40000)
         };
 
         await context.Institutions.AddRangeAsync(institutions, cancellationToken);
