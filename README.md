@@ -101,3 +101,10 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
 - **Docs:** each project folder keeps a `README.md` that documents its stage and next todos; update them whenever milestone changes.
 - **Tests:** add unit tests alongside features, and wire e2e tests once the full Compose stack is usable locally.
 
+## Backend status
+
+- `apps/api/EduStats.sln` hosts the API stack with four projects: `EduStats.Domain`, `EduStats.Application`, `EduStats.Infrastructure`, and `EduStats.Api`.
+- Clean architecture wiring includes MediatR (CQRS entrypoint), FluentValidation, and EF Core (PostgreSQL provider) with a generic repository + unit-of-work abstraction.
+- The API exposes `GET /api/institutions` via `InstitutionsController`, currently backed by stub paging that will evolve once migrations + data seeds arrive.
+- Health probe available at `/health`; OpenAPI is published automatically in development builds.
+- `apps/api/Dockerfile` builds and publishes the API container used by `docker-compose.yml`.

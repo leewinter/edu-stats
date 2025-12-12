@@ -1,0 +1,20 @@
+using EduStats.Application.Common.Interfaces;
+using EduStats.Domain.Institutions;
+using Microsoft.EntityFrameworkCore;
+
+namespace EduStats.Infrastructure.Persistence;
+
+public sealed class ApplicationDbContext : DbContext, IUnitOfWork
+{
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    {
+    }
+
+    public DbSet<Institution> Institutions => Set<Institution>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        base.OnModelCreating(modelBuilder);
+    }
+}
