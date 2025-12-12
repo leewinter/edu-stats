@@ -1,0 +1,102 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    image: edu-stats/api:dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Main: Host=postgres;Port=5432;Database=edu_stats;Username=app;Password=app
+      MessageBroker__Host: amqp://rabbitmq:5672
+      Cache__Host: redis:6379
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./apps/api:/app
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    image: edu-stats/web:dev
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080
+    ports:
+      - "4173:4173"
+    volumes:
+      - ./apps/web:/usr/src/app
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: edu_stats
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d edu_stats"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: app
+      RABBITMQ_DEFAULT_PASS: app
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  migrator:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    image: edu-stats/api-migrator:dev
+    command: ["dotnet", "ef", "database", "update"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__Main: Host=postgres;Port=5432;Database=edu_stats;Username=app;Password=app
+    profiles:
+      - migrate
+
+  portainer:
+    image: portainer/portainer-ce:2.21.3
+    profiles:
+      - portainer
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  portainer_data:
