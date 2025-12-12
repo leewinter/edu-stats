@@ -2,12 +2,20 @@ import { useMemo } from "react";
 import { Button, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
+export interface InstitutionAddressRow {
+  line1: string;
+  line2?: string | null;
+  city: string;
+  county: string;
+  country: string;
+  postalCode: string;
+}
+
 export interface InstitutionTableRow {
   id: string;
   name: string;
-  country: string;
-  county: string;
   enrollment: number;
+  addresses: InstitutionAddressRow[];
 }
 
 export interface InstitutionsTableProps {
@@ -27,14 +35,24 @@ export function InstitutionsTable({
         title: "Institution",
         dataIndex: "name",
         key: "name",
-        render: (text, record) => (
-          <div>
-            <Typography.Text strong>{text}</Typography.Text>
-            <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-              {record.county}, {record.country}
-            </Typography.Paragraph>
-          </div>
-        )
+        render: (text, record) => {
+          const primaryAddress = record.addresses?.[0];
+          return (
+            <div>
+              <Typography.Text strong>{text}</Typography.Text>
+              {primaryAddress && (
+                <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+                  {primaryAddress.county}, {primaryAddress.country}
+                </Typography.Paragraph>
+              )}
+              <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
+                {primaryAddress
+                  ? `${primaryAddress.line1}, ${primaryAddress.city}, ${primaryAddress.postalCode}`
+                  : "No address on file"}
+              </Typography.Paragraph>
+            </div>
+          );
+        }
       },
       {
         title: "Enrollment",

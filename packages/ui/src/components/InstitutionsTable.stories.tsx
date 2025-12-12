@@ -6,23 +6,44 @@ const sampleInstitutions: InstitutionTableRow[] = [
   {
     id: "edinburgh",
     name: "University of Edinburgh",
-    county: "Midlothian",
-    country: "United Kingdom",
-    enrollment: 32000
+    enrollment: 32000,
+    addresses: [
+      {
+        line1: "Old College",
+        city: "Edinburgh",
+        county: "Midlothian",
+        country: "United Kingdom",
+        postalCode: "EH8 9YL"
+      }
+    ]
   },
   {
     id: "oxford",
     name: "University of Oxford",
-    county: "Oxfordshire",
-    country: "United Kingdom",
-    enrollment: 24500
+    enrollment: 24500,
+    addresses: [
+      {
+        line1: "Wellington Square",
+        city: "Oxford",
+        county: "Oxfordshire",
+        country: "United Kingdom",
+        postalCode: "OX1 2JD"
+      }
+    ]
   },
   {
     id: "kcl",
     name: "King's College London",
-    county: "Greater London",
-    country: "United Kingdom",
-    enrollment: 29000
+    enrollment: 29000,
+    addresses: [
+      {
+        line1: "Strand",
+        city: "London",
+        county: "Greater London",
+        country: "United Kingdom",
+        postalCode: "WC2R 2LS"
+      }
+    ]
   }
 ];
 

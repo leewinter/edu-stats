@@ -11,6 +11,7 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     }
 
     public DbSet<Institution> Institutions => Set<Institution>();
+    public DbSet<InstitutionAddress> InstitutionAddresses => Set<InstitutionAddress>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

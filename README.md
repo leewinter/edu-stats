@@ -105,6 +105,7 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
 
 - `apps/api/EduStats.sln` hosts the API stack with four projects: `EduStats.Domain`, `EduStats.Application`, `EduStats.Infrastructure`, and `EduStats.Api`.
 - Clean architecture wiring includes MediatR (CQRS entrypoint), FluentValidation, and EF Core (PostgreSQL provider) with a generic repository + unit-of-work abstraction.
+- Institutions now include a related `institution_addresses` table; the API materializes nested address DTOs when querying and derives the legacy `country`/`county` values from the primary address. Create/update commands now require at least one address payload.
 - The API exposes `GET /api/institutions` via `InstitutionsController`, with initial seed data delivered via EF Core migrations.
 - Health probe available at `/health`; OpenAPI is published automatically in development builds.
 - `apps/api/src/EduStats.Migrator` is a console utility that applies migrations + seed data (used by the Compose `migrator` profile).
@@ -116,7 +117,7 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
 - `apps/web` is a Vite + React (TS) client that uses TanStack Query, Ant Design, and shared UI primitives. `npm run dev` starts the UI on http://localhost:4173.
 - The dashboard now offers inline create/edit flows for institutions: use the **Add institution** button or row-level **Edit** action, complete the Ant Design form, and the list auto-refreshes via React Query invalidation.
 - `packages/ui` is a standalone component library (tsup build) plus a Vite-powered Storybook (`npm run storybook` in that folder).
-- Shared UI primitives (`StatisticsCard`, `InstitutionsTable`, `InstitutionFormModal`) live inside `packages/ui`, so downstream apps can consume a consistent presentation layer.
+- Shared UI primitives (`StatisticsCard`, `InstitutionsTable`, `InstitutionFormModal`) live inside `packages/ui`, so downstream apps can consume a consistent presentation layer; the form modal now captures full campus address metadata (city/county/country/postcode only lives with addresses).
 - Run `npm run dev` (watch) or `npm run build` inside `packages/ui` so `dist/` stays fresh—Vite resolves `@edu-stats/ui` to that output for both dev and build flows.
 - `.env.example` inside `apps/web` lists `VITE_API_BASE_URL` which defaults to `http://localhost:8080`; the client hits `/api/institutions` on that host.
 - Playwright smoke tests (`npm run test:e2e` from repo root) verify the dashboard renders seeded institutions once the stack is up.

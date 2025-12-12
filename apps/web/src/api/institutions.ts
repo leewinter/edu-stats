@@ -1,18 +1,27 @@
 import { apiClient } from "./client";
 
+export interface InstitutionAddress {
+  line1: string;
+  line2?: string | null;
+  city: string;
+  county: string;
+  country: string;
+  postalCode: string;
+}
+
+export interface InstitutionAddressInput extends InstitutionAddress {}
+
 export interface Institution {
   id: string;
   name: string;
-  country: string;
-  county: string;
   enrollment: number;
+  addresses: InstitutionAddress[];
 }
 
 export interface InstitutionInput {
   name: string;
-  country: string;
-  county: string;
   enrollment: number;
+  addresses: InstitutionAddressInput[];
 }
 
 export interface PagedResult<T> {

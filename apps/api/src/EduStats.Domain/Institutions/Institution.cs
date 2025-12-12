@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using EduStats.Domain.Common;
 
 namespace EduStats.Domain.Institutions;
@@ -5,24 +6,24 @@ namespace EduStats.Domain.Institutions;
 public sealed class Institution : AuditableEntity<Guid>, IAggregateRoot
 {
     public string Name { get; private set; }
-    public string Country { get; private set; }
-    public string County { get; private set; }
     public int Enrollment { get; private set; }
+    private readonly List<InstitutionAddress> _addresses = new();
+    public IReadOnlyCollection<InstitutionAddress> Addresses => _addresses.AsReadOnly();
 
     private Institution()
     {
         Name = string.Empty;
-        Country = string.Empty;
-        County = string.Empty;
     }
 
-    public Institution(string name, string country, string county, int enrollment)
+    public Institution(string name, int enrollment, IEnumerable<InstitutionAddress>? addresses = null)
     {
         Id = Guid.NewGuid();
         Name = name;
-        Country = country;
-        County = county;
         Enrollment = enrollment;
+        if (addresses is not null)
+        {
+            SetAddresses(addresses);
+        }
     }
 
     public void UpdateEnrollment(int enrollment)
@@ -30,11 +31,24 @@ public sealed class Institution : AuditableEntity<Guid>, IAggregateRoot
         Enrollment = enrollment;
     }
 
-    public void Update(string name, string country, string county, int enrollment)
+    public void Update(string name, int enrollment)
     {
         Name = name;
-        Country = country;
-        County = county;
         Enrollment = enrollment;
+    }
+
+    public void SetAddresses(IEnumerable<InstitutionAddress> addresses)
+    {
+        _addresses.Clear();
+        foreach (var address in addresses)
+        {
+            AddAddress(address);
+        }
+    }
+
+    public void AddAddress(InstitutionAddress address)
+    {
+        address.AttachToInstitution(this);
+        _addresses.Add(address);
     }
 }

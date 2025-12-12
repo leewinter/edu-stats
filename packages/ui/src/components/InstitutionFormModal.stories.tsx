@@ -34,9 +34,17 @@ export const EditMode: Story = {
     mode: "edit",
     initialValues: {
       name: "University of Glasgow",
-      county: "Glasgow City",
-      country: "United Kingdom",
-      enrollment: 26500
+      enrollment: 26500,
+      addresses: [
+        {
+          line1: "University Avenue",
+          line2: "",
+          city: "Glasgow",
+          county: "Glasgow City",
+          country: "United Kingdom",
+          postalCode: "G12 8QQ"
+        }
+      ]
     }
   }
 };
@@ -44,6 +52,6 @@ export const EditMode: Story = {
 export const WithError: Story = {
   args: {
     mode: "create",
-    errorMessage: "API unavailable – please try again."
+    errorMessage: "API unavailable - please try again."
   }
 };

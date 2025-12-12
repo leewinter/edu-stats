@@ -36,9 +36,17 @@ Environment expectations:
   ```json
   {
     "name": "Contoso College",
-    "country": "USA",
-    "stateProvince": "NY",
-    "enrollment": 12345
+    "enrollment": 12345,
+    "addresses": [
+      {
+        "line1": "1 Example Way",
+        "line2": null,
+        "city": "Birmingham",
+        "county": "West Midlands",
+        "country": "UK",
+        "postalCode": "B1 1AA"
+      }
+    ]
   }
   ```
   `PUT /api/institutions/{id}` with the same shape updates an existing record.
