@@ -1,13 +1,25 @@
-﻿# UI Library (packages/ui)
+# UI Library (packages/ui)
 
-Stage: repository skeleton
+Stage: Storybook + Ant Design scaffold
 
-Shared React component library consumed by any client applications. Will be published locally via workspace tooling (e.g., pnpm workspaces or turborepo) once the tooling is introduced.
+This package contains the shared React component library consumed by client applications. Components are authored in TypeScript, styled via Ant Design, and bundled with `tsup` for CJS/ESM consumers.
 
-## Todo
-- [ ] Decide on workspace manager and build tooling
-- [ ] Scaffold component package (TS, Storybook optional)
-- [ ] Establish design tokens + shared styles
-- [ ] Add unit + visual regression tests
-- [ ] Document usage and release instructions
+## Commands
 
+```bash
+cd packages/ui
+npm install            # install deps
+npm run dev            # watch build with tsup
+npm run build          # emit /dist for publishing or local consumption
+npm run storybook      # launch Storybook on http://localhost:6006
+npm run build-storybook
+```
+
+### Storybook
+
+Storybook runs with the Vite builder and includes the essentials + interactions addons for knobs, docs, and testing hooks. Stories live alongside the source (`src/**/*.stories.tsx`).
+
+### Consumption
+
+- Local development: the web client imports `@edu-stats/ui` through Vite aliases pointing at `src/`, so changes hot-reload instantly.
+- Packaging/deployment: run `npm run build` to emit distributable bundles in `dist/`. Downstream apps or pipelines can `npm pack` this directory or publish it to an internal registry when ready.

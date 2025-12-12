@@ -110,6 +110,13 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
 - `apps/api/src/EduStats.Migrator` is a console utility that applies migrations + seed data (used by the Compose `migrator` profile).
 - `apps/api/Dockerfile` produces multi-stage targets for the API runtime and the migrator so Compose can choose the correct artifact.
 
+## Frontend status
+
+- `apps/web` is a Vite + React (TS) client that uses TanStack Query, Ant Design, and shared UI primitives. `npm run dev` starts the UI on http://localhost:4173.
+- `packages/ui` is a standalone component library (tsup build) plus a Vite-powered Storybook (`npm run storybook` in that folder).
+- Run `npm run dev` (watch) or `npm run build` inside `packages/ui` so `dist/` stays fresh—Vite resolves `@edu-stats/ui` to that output for both dev and build flows.
+- `.env.example` inside `apps/web` lists `VITE_API_BASE_URL` which defaults to `http://localhost:8080/api`.
+
 ### Database workflow
 
 - **Create new migrations**
