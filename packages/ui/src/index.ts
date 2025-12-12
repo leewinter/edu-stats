@@ -14,3 +14,15 @@ export type {
   InstitutionFormValues,
   InstitutionAddressFormValue
 } from "./components/InstitutionFormModal";
+
+export { CoursesTable } from "./components/CoursesTable";
+export type {
+  CoursesTableProps,
+  CourseTableRow
+} from "./components/CoursesTable";
+
+export { CourseFormModal } from "./components/CourseFormModal";
+export type {
+  CourseFormModalProps,
+  CourseFormValues
+} from "./components/CourseFormModal";

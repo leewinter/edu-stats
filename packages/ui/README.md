@@ -9,6 +9,8 @@ This package contains the shared React component library consumed by client appl
 - `StatisticsCard` – summary metric tile with title/value/trend label support.
 - `InstitutionsTable` – standardized Ant Design table markup for institution listings, including optional row-level edit action wiring.
 - `InstitutionFormModal` – form-in-a-modal for creating/editing institution records with validation baked in (captures primary campus address line/city/county/country/postcode).
+- `CoursesTable` – Ant Design table for course catalog listings with optional edit actions.
+- `CourseFormModal` – reusable course create/edit form supporting institution selection, metadata, and validation.
 
 ## Commands
 
