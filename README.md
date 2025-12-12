@@ -116,6 +116,7 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
 - `packages/ui` is a standalone component library (tsup build) plus a Vite-powered Storybook (`npm run storybook` in that folder).
 - Run `npm run dev` (watch) or `npm run build` inside `packages/ui` so `dist/` stays fresh—Vite resolves `@edu-stats/ui` to that output for both dev and build flows.
 - `.env.example` inside `apps/web` lists `VITE_API_BASE_URL` which defaults to `http://localhost:8080/api`.
+- Playwright smoke tests (`npm run test:e2e` from repo root) verify the dashboard renders seeded institutions once the stack is up.
 
 ### Database workflow
 
