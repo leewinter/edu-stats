@@ -29,4 +29,12 @@ public sealed class Institution : AuditableEntity<Guid>, IAggregateRoot
     {
         Enrollment = enrollment;
     }
+
+    public void Update(string name, string country, string stateProvince, int enrollment)
+    {
+        Name = name;
+        Country = country;
+        StateProvince = stateProvince;
+        Enrollment = enrollment;
+    }
 }

@@ -109,6 +109,7 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
 - Health probe available at `/health`; OpenAPI is published automatically in development builds.
 - `apps/api/src/EduStats.Migrator` is a console utility that applies migrations + seed data (used by the Compose `migrator` profile).
 - `apps/api/Dockerfile` produces multi-stage targets for the API runtime and the migrator so Compose can choose the correct artifact.
+- CQRS command endpoints (`POST /api/institutions`, `PUT /api/institutions/{id}`) emit `InstitutionChangedEvent` messages via RabbitMQ (`institutions` exchange, routing keys `institutions.created` / `institutions.updated`).
 
 ## Frontend status
 
@@ -138,3 +139,9 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
   docker compose run --rm --profile migrate migrator
   ```
 - API auto-migration is opt-in via `Database__RunMigrationsOnStartup=true` (already wired in `docker-compose.yml`); remove/override the env var if you prefer manual control.
+
+### Messaging
+
+- RabbitMQ is part of the Compose stack (`rabbitmq` service). The API binds to the `institutions` exchange and publishes `InstitutionChangedEvent` payloads whenever `POST /api/institutions` or `PUT /api/institutions/{id}` succeed.
+- Default settings (`MessageBroker__HostName`, `__Port`, `__UserName`, `__Password`, `__VirtualHost`) are wired via Compose and can be overridden per environment.
+- No consumer is bundled yet—bind any queue to the `institutions` exchange with routing keys such as `institutions.created` to react to write operations.

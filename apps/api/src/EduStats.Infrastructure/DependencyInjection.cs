@@ -1,4 +1,5 @@
 using EduStats.Application.Common.Interfaces;
+using EduStats.Infrastructure.Messaging;
 using EduStats.Infrastructure.Persistence;
 using EduStats.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,9 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+
+        services.Configure<RabbitMqOptions>(configuration.GetSection(RabbitMqOptions.SectionName));
+        services.AddSingleton<IEventPublisher, RabbitMqEventPublisher>();
 
         services.AddHealthChecks();
 

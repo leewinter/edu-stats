@@ -1,0 +1,15 @@
+using FluentValidation;
+
+namespace EduStats.Application.Institutions.Commands.UpdateInstitution;
+
+public sealed class UpdateInstitutionCommandValidator : AbstractValidator<UpdateInstitutionCommand>
+{
+    public UpdateInstitutionCommandValidator()
+    {
+        RuleFor(x => x.Id).NotEmpty();
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(256);
+        RuleFor(x => x.Country).NotEmpty().MaximumLength(128);
+        RuleFor(x => x.StateProvince).MaximumLength(128);
+        RuleFor(x => x.Enrollment).GreaterThanOrEqualTo(0);
+    }
+}
