@@ -16,7 +16,7 @@ export interface PagedResult<T> {
 }
 
 export const fetchInstitutions = async () => {
-  const response = await apiClient.get<PagedResult<Institution>>("/institutions", {
+  const response = await apiClient.get<PagedResult<Institution>>("/api/institutions", {
     params: { pageNumber: 1, pageSize: 10 }
   });
   return response.data;

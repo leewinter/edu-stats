@@ -17,7 +17,7 @@ npm run typecheck    # type-only compile check
 npm run test:e2e     # requires API + DB running
 ```
 
-Variables expected by Vite are documented in `.env.example` (copy to `.env` as needed). Defaults point at `http://localhost:8080/api` for local API access.
+Variables expected by Vite are documented in `.env.example` (copy to `.env` as needed). Defaults point at `http://localhost:8080`, and the client automatically requests `/api/institutions` on that host.
 
 ### Shared UI imports
 

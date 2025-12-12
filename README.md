@@ -77,7 +77,7 @@ The provided `docker-compose.yml` wires up the shared infrastructure and placeho
 1. **Bootstrap infra + apps**
    ```bash
    docker compose up -d postgres rabbitmq redis
-   docker compose up --build api client
+   docker compose up -d --build api client
    ```
 2. **Apply EF Core migrations** whenever schema changes:
    ```bash
@@ -115,7 +115,7 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
 - `apps/web` is a Vite + React (TS) client that uses TanStack Query, Ant Design, and shared UI primitives. `npm run dev` starts the UI on http://localhost:4173.
 - `packages/ui` is a standalone component library (tsup build) plus a Vite-powered Storybook (`npm run storybook` in that folder).
 - Run `npm run dev` (watch) or `npm run build` inside `packages/ui` so `dist/` stays fresh—Vite resolves `@edu-stats/ui` to that output for both dev and build flows.
-- `.env.example` inside `apps/web` lists `VITE_API_BASE_URL` which defaults to `http://localhost:8080/api`.
+- `.env.example` inside `apps/web` lists `VITE_API_BASE_URL` which defaults to `http://localhost:8080`; the client hits `/api/institutions` on that host.
 - Playwright smoke tests (`npm run test:e2e` from repo root) verify the dashboard renders seeded institutions once the stack is up.
 
 ### Database workflow
