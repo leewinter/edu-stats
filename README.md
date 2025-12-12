@@ -105,6 +105,28 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
 
 - `apps/api/EduStats.sln` hosts the API stack with four projects: `EduStats.Domain`, `EduStats.Application`, `EduStats.Infrastructure`, and `EduStats.Api`.
 - Clean architecture wiring includes MediatR (CQRS entrypoint), FluentValidation, and EF Core (PostgreSQL provider) with a generic repository + unit-of-work abstraction.
-- The API exposes `GET /api/institutions` via `InstitutionsController`, currently backed by stub paging that will evolve once migrations + data seeds arrive.
+- The API exposes `GET /api/institutions` via `InstitutionsController`, with initial seed data delivered via EF Core migrations.
 - Health probe available at `/health`; OpenAPI is published automatically in development builds.
-- `apps/api/Dockerfile` builds and publishes the API container used by `docker-compose.yml`.
+- `apps/api/src/EduStats.Migrator` is a console utility that applies migrations + seed data (used by the Compose `migrator` profile).
+- `apps/api/Dockerfile` produces multi-stage targets for the API runtime and the migrator so Compose can choose the correct artifact.
+
+### Database workflow
+
+- **Create new migrations**
+  ```bash
+  cd apps/api
+  dotnet ef migrations add <Name> \
+    --project src/EduStats.Infrastructure \
+    --startup-project src/EduStats.Api \
+    --output-dir Persistence/Migrations
+  ```
+- **Apply migrations + seed data locally**
+  ```bash
+  cd apps/api
+  dotnet run --project src/EduStats.Migrator
+  ```
+- **Apply via Docker Compose**
+  ```bash
+  docker compose run --rm --profile migrate migrator
+  ```
+- API auto-migration is opt-in via `Database__RunMigrationsOnStartup=true` (already wired in `docker-compose.yml`); remove/override the env var if you prefer manual control.

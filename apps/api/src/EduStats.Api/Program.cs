@@ -1,3 +1,4 @@
+using EduStats.Api.Extensions;
 using EduStats.Application;
 using EduStats.Infrastructure;
 
@@ -19,6 +20,12 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+var autoMigrate = builder.Configuration.GetValue<bool?>("Database:RunMigrationsOnStartup") ?? false;
+if (autoMigrate)
+{
+    await app.InitializeDatabaseAsync();
+}
 
 if (app.Environment.IsDevelopment())
 {
