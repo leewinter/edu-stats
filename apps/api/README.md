@@ -29,9 +29,9 @@ Environment expectations:
 
 ## CQRS + messaging
 
-- **Queries**  
+- **Institution queries**  
   `GET /api/institutions?pageNumber=1&pageSize=10`
-- **Commands**  
+- **Institution commands**  
   `POST /api/institutions` with body
   ```json
   {
@@ -50,7 +50,21 @@ Environment expectations:
   }
   ```
   `PUT /api/institutions/{id}` with the same shape updates an existing record.
-- Each successful command publishes an `InstitutionChangedEvent` to the RabbitMQ exchange `institutions` using routing keys `institutions.created` / `institutions.updated`. Consumers can bind queues to that exchange to react to mutations (no built-in consumer yet).
+- **Course endpoints**  
+  `GET /api/courses?pageNumber=1&pageSize=10[&institutionId=<guid>]`  
+  `POST /api/courses` with body
+  ```json
+  {
+    "institutionId": "<guid>",
+    "title": "Computer Science BSc",
+    "code": "CS101",
+    "level": "Undergraduate",
+    "credits": 120,
+    "description": "Foundational computing degree"
+  }
+  ```
+  `PUT /api/courses/{id}` with the same payload shape updates an existing course.
+- Each successful institution command publishes an `InstitutionChangedEvent` to the RabbitMQ exchange `institutions` using routing keys `institutions.created` / `institutions.updated`. Consumers can bind queues to that exchange to react to mutations (no built-in consumer yet).
 
 ## Database migrations & seed data
 

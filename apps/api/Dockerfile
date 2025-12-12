@@ -11,6 +11,7 @@ COPY src/EduStats.Application/EduStats.Application.csproj src/EduStats.Applicati
 COPY src/EduStats.Infrastructure/EduStats.Infrastructure.csproj src/EduStats.Infrastructure/
 COPY src/EduStats.Api/EduStats.Api.csproj src/EduStats.Api/
 COPY src/EduStats.Migrator/EduStats.Migrator.csproj src/EduStats.Migrator/
+COPY tests/EduStats.Application.Tests/EduStats.Application.Tests.csproj tests/EduStats.Application.Tests/
 RUN dotnet restore
 COPY . .
 RUN dotnet publish src/EduStats.Api/EduStats.Api.csproj -c Release -o /app/publish/api /p:UseAppHost=false

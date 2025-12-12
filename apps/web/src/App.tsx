@@ -5,24 +5,40 @@ import {
   InstitutionFormModal,
   type InstitutionFormValues,
   InstitutionsTable,
+  CourseFormModal,
+  type CourseFormValues,
+  CoursesTable,
   StatisticsCard
 } from "@edu-stats/ui";
 import { useInstitutions } from "./hooks/useInstitutions";
+import { useCourses } from "./hooks/useCourses";
 import {
   createInstitution,
   updateInstitution,
   type Institution,
   type InstitutionInput
 } from "./api/institutions";
+import {
+  createCourse,
+  updateCourse,
+  type Course,
+  type CourseInput
+} from "./api/courses";
 import "./App.css";
 
 type ModalState =
   | { mode: "create" }
   | { mode: "edit"; institution: Institution };
 
+type CourseModalState =
+  | { mode: "create" }
+  | { mode: "edit"; course: Course };
+
 function App() {
   const [modalState, setModalState] = useState<ModalState | null>(null);
+  const [courseModalState, setCourseModalState] = useState<CourseModalState | null>(null);
   const { data, isLoading, isError } = useInstitutions();
+  const { data: courseData, isLoading: isCoursesLoading } = useCourses();
   const queryClient = useQueryClient();
 
   const createInstitutionMutation = useMutation({
@@ -42,8 +58,28 @@ function App() {
     }
   });
 
+  const createCourseMutation = useMutation({
+    mutationFn: createCourse,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      handleCloseCourseModal();
+    }
+  });
+
+  const updateCourseMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: CourseInput }) => updateCourse(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      handleCloseCourseModal();
+    }
+  });
+
   const handleOpenCreate = useCallback(() => {
     setModalState({ mode: "create" });
+  }, []);
+
+  const handleOpenCreateCourse = useCallback(() => {
+    setCourseModalState({ mode: "create" });
   }, []);
 
   const handleOpenEdit = useCallback(
@@ -53,8 +89,16 @@ function App() {
     []
   );
 
+  const handleOpenEditCourse = useCallback((course: Course) => {
+    setCourseModalState({ mode: "edit", course });
+  }, []);
+
   function handleCloseModal() {
     setModalState(null);
+  }
+
+  function handleCloseCourseModal() {
+    setCourseModalState(null);
   }
 
   const handleSubmit = async (values: InstitutionFormValues) => {
@@ -70,16 +114,51 @@ function App() {
     }
   };
 
+  const handleCourseSubmit = async (values: CourseFormValues) => {
+    const payload = mapCourseFormToInput(values);
+
+    if (courseModalState?.mode === "edit" && courseModalState.course) {
+      await updateCourseMutation.mutateAsync({
+        id: courseModalState.course.id,
+        payload
+      });
+    } else {
+      await createCourseMutation.mutateAsync(payload);
+    }
+  };
+
   const isSubmitting =
     createInstitutionMutation.isLoading || updateInstitutionMutation.isLoading;
   const mutationError =
     (createInstitutionMutation.error as Error | null) ??
     (updateInstitutionMutation.error as Error | null);
   const mutationErrorMessage = mutationError?.message;
+
+  const isCourseSubmitting =
+    createCourseMutation.isLoading || updateCourseMutation.isLoading;
+  const courseMutationError =
+    (createCourseMutation.error as Error | null) ??
+    (updateCourseMutation.error as Error | null);
+  const courseMutationErrorMessage = courseMutationError?.message;
+
   const totalInstitutions = data?.totalCount ?? 0;
   const totalEnrollment = useMemo(
     () => data?.items.reduce((acc, inst) => acc + inst.enrollment, 0) ?? 0,
     [data?.items]
+  );
+  const institutionLookup = useMemo(() => {
+    const map = new Map<string, string>();
+    (data?.items ?? []).forEach((inst) => map.set(inst.id, inst.name));
+    return map;
+  }, [data?.items]);
+
+  const courseRows = useMemo(
+    () =>
+      (courseData?.items ?? []).map((course) => ({
+        ...course,
+        institutionName: institutionLookup.get(course.institutionId) ?? "Unknown"
+      })),
+    [courseData?.items, institutionLookup]
   );
 
   return (
@@ -134,6 +213,25 @@ function App() {
             loading={isLoading}
             onEdit={handleOpenEdit}
           />
+          <div>
+            <Space
+              direction="horizontal"
+              align="center"
+              style={{ width: "100%", justifyContent: "space-between" }}
+            >
+              <Typography.Title level={4} style={{ margin: 0 }}>
+                Course catalog snapshot
+              </Typography.Title>
+              <Button type="primary" ghost onClick={handleOpenCreateCourse}>
+                Add course
+              </Button>
+            </Space>
+            <CoursesTable
+              courses={courseRows}
+              loading={isCoursesLoading}
+              onEdit={handleOpenEditCourse}
+            />
+          </div>
         </Space>
       </Layout.Content>
       <InstitutionFormModal
@@ -148,6 +246,23 @@ function App() {
         }
         onCancel={handleCloseModal}
         onSubmit={handleSubmit}
+      />
+      <CourseFormModal
+        open={courseModalState !== null}
+        mode={courseModalState?.mode ?? "create"}
+        loading={isCourseSubmitting}
+        errorMessage={courseMutationErrorMessage}
+        institutionOptions={(data?.items ?? []).map((inst) => ({
+          value: inst.id,
+          label: inst.name
+        }))}
+        initialValues={
+          courseModalState?.mode === "edit" && courseModalState.course
+            ? mapCourseToFormValues(courseModalState.course)
+            : undefined
+        }
+        onCancel={handleCloseCourseModal}
+        onSubmit={handleCourseSubmit}
       />
     </Layout>
   );
@@ -214,5 +329,27 @@ function mapInstitutionToFormValues(institution: Institution): InstitutionFormVa
       country: address.country ?? "",
       postalCode: address.postalCode
     }))
+  };
+}
+
+function mapCourseFormToInput(values: CourseFormValues): CourseInput {
+  return {
+    institutionId: values.institutionId,
+    title: values.title.trim(),
+    code: values.code.trim(),
+    level: values.level.trim(),
+    credits: values.credits,
+    description: values.description?.trim() || undefined
+  };
+}
+
+function mapCourseToFormValues(course: Course): CourseFormValues {
+  return {
+    institutionId: course.institutionId,
+    title: course.title,
+    code: course.code,
+    level: course.level,
+    credits: course.credits,
+    description: course.description ?? ""
   };
 }

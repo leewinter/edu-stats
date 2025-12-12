@@ -1,4 +1,5 @@
 using EduStats.Application.Common.Interfaces;
+using EduStats.Domain.Courses;
 using EduStats.Domain.Institutions;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     }
 
     public DbSet<Institution> Institutions => Set<Institution>();
+    public DbSet<Course> Courses => Set<Course>();
     public DbSet<InstitutionAddress> InstitutionAddresses => Set<InstitutionAddress>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
