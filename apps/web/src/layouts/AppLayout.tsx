@@ -4,20 +4,28 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { NavigationHeader } from "@edu-stats/ui";
 import "../App.css";
 
-const menuItems: MenuProps["items"] = [
-  {
-    key: "dashboard",
-    label: <Link to="/">Dashboard</Link>
-  },
-  {
-    key: "courses",
-    label: <Link to="/courses">Courses</Link>
-  }
-];
-
 const AppLayout = () => {
   const location = useLocation();
-  const selectedKey = location.pathname.startsWith("/courses") ? "courses" : "dashboard";
+  const selectedKey = location.pathname.startsWith("/courses")
+    ? "courses"
+    : location.pathname.startsWith("/students")
+      ? "students"
+      : "dashboard";
+
+  const menuItems: MenuProps["items"] = [
+    {
+      key: "dashboard",
+      label: <Link to="/">Dashboard</Link>
+    },
+    {
+      key: "courses",
+      label: <Link to="/courses">Courses</Link>
+    },
+    {
+      key: "students",
+      label: <Link to="/students">Students</Link>
+    }
+  ];
 
   return (
     <Layout className="app-layout">

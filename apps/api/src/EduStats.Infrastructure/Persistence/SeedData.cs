@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EduStats.Domain.Courses;
 using EduStats.Domain.Institutions;
+using EduStats.Domain.Students;
 using Microsoft.EntityFrameworkCore;
 
 namespace EduStats.Infrastructure.Persistence;
@@ -63,6 +64,36 @@ public static class SeedData
 
         await context.SaveChangesAsync(cancellationToken);
 
+        var studentSeeds = new[]
+        {
+            new StudentSeed("University of Oxford", "Amelia", "Hughes", "amelia.hughes@oxford.ac.uk", 2023, "Computer Science"),
+            new StudentSeed("University of Cambridge", "Noah", "Patel", "noah.patel@cambridge.ac.uk", 2022, "Mechanical Engineering"),
+            new StudentSeed("Imperial College London", "Isla", "Foster", "isla.foster@imperial.ac.uk", 2024, "Medicine"),
+            new StudentSeed("University of Edinburgh", "Leo", "Macdonald", "leo.macdonald@ed.ac.uk", 2021, "Informatics"),
+            new StudentSeed("University of Manchester", "Olivia", "Khan", "olivia.khan@manchester.ac.uk", 2023, "Business Analytics")
+        };
+
+        foreach (var student in studentSeeds)
+        {
+            if (await context.Students.AnyAsync(s => s.Email == student.Email, cancellationToken) ||
+                !institutionLookup.TryGetValue(student.InstitutionName, out var institution))
+            {
+                continue;
+            }
+
+            await context.Students.AddAsync(
+                new Student(
+                    institution.Id,
+                    student.FirstName,
+                    student.LastName,
+                    student.Email,
+                    student.EnrollmentYear,
+                    student.CourseFocus),
+                cancellationToken);
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
+
         var courseSeeds = new[]
         {
             new CourseSeed("University of Oxford", "Computer Science BSc", "CS101", "Undergraduate", 120, "Foundational degree in computing."),
@@ -119,4 +150,12 @@ public static class SeedData
         string Level,
         int Credits,
         string Description);
+
+    private sealed record StudentSeed(
+        string InstitutionName,
+        string FirstName,
+        string LastName,
+        string Email,
+        int EnrollmentYear,
+        string CourseFocus);
 }

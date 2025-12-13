@@ -113,6 +113,7 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
 - Clean architecture wiring includes MediatR (CQRS entrypoint), FluentValidation, and EF Core (PostgreSQL provider) with a generic repository + unit-of-work abstraction.
 - Institutions now include a related `institution_addresses` table; the API materializes nested address DTOs when querying and derives the legacy `country`/`county` values from the primary address. Create/update commands now require at least one address payload.
 - Courses are first-class too: `Course` entities link to institutions, surface `/api/courses` query + command endpoints, and seed data includes a small curriculum snapshot.
+- Students have been added as a dedicated aggregate with `/api/students` CRUD endpoints, CQRS handlers, migrations, and seed data so each flagship university has example learners.
 - The API exposes `GET /api/institutions` via `InstitutionsController`, with initial seed data delivered via EF Core migrations.
 - Health probe available at `/health`; OpenAPI is published automatically in development builds.
 - `apps/api/src/EduStats.Migrator` is a console utility that applies migrations + seed data (used by the Compose `migrator` profile).
@@ -126,6 +127,7 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
 - `packages/ui` is a standalone component library (tsup build) plus a Vite-powered Storybook (`npm run storybook` in that folder).
 - Shared UI primitives (`StatisticsCard`, `InstitutionsTable`, `InstitutionFormModal`) live inside `packages/ui`, so downstream apps can consume a consistent presentation layer; the form modal now captures full campus address metadata (city/county/country/postcode only lives with addresses).
 - The home screen also includes a “Course catalog snapshot” table sourced from the new `/api/courses` endpoint, complete with inline create/edit workflows powered by shared UI modals.
+- Dedicated Courses and Students pages exist under `/courses` and `/students`, each reusing shared tables + modals for full CRUD, including delete confirmations.
 - Run `npm run dev` (watch) or `npm run build` inside `packages/ui` so `dist/` stays fresh—Vite resolves `@edu-stats/ui` to that output for both dev and build flows.
 - `.env.example` inside `apps/web` lists `VITE_API_BASE_URL` which defaults to `http://localhost:8080`; the client hits `/api/institutions` on that host.
 - Playwright smoke tests (`npm run test:e2e` from repo root) verify the dashboard renders seeded institutions once the stack is up.
