@@ -5,10 +5,13 @@ import {
   StudentsTable,
   StudentFormModal,
   type StudentFormValues,
-  StatisticsCard
+  StatisticsCard,
+  StudentEnrollmentManager
 } from "@edu-stats/ui";
 import { useStudents } from "../hooks/useStudents";
 import { useInstitutions } from "../hooks/useInstitutions";
+import { useCourses } from "../hooks/useCourses";
+import { useStudentEnrollments } from "../hooks/useStudentEnrollments";
 import {
   createStudent,
   updateStudent,
@@ -16,6 +19,7 @@ import {
   type Student,
   type StudentInput
 } from "../api/students";
+import { enrollStudent as enrollStudentApi } from "../api/enrollments";
 import "../App.css";
 
 type StudentModalState =
@@ -24,8 +28,14 @@ type StudentModalState =
 
 const StudentsPage = () => {
   const [modalState, setModalState] = useState<StudentModalState | null>(null);
+  const [enrollmentStudent, setEnrollmentStudent] = useState<Student | null>(null);
   const { data, isLoading, isError } = useStudents();
   const { data: institutionData } = useInstitutions();
+  const { data: coursesData } = useCourses(enrollmentStudent?.institutionId);
+  const {
+    data: enrollmentData,
+    isLoading: enrollmentsLoading
+  } = useStudentEnrollments(enrollmentStudent?.id);
   const queryClient = useQueryClient();
 
   const createStudentMutation = useMutation({
@@ -51,6 +61,14 @@ const StudentsPage = () => {
     }
   });
 
+  const enrollMutation = useMutation({
+    mutationFn: ({ studentId, courseId }: { studentId: string; courseId: string }) =>
+      enrollStudentApi(studentId, courseId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["student-enrollments", variables.studentId] });
+    }
+  });
+
   const handleOpenCreate = useCallback(() => {
     setModalState({ mode: "create" });
   }, []);
@@ -58,6 +76,12 @@ const StudentsPage = () => {
   const handleOpenEdit = useCallback((student: Student) => {
     setModalState({ mode: "edit", student });
   }, []);
+
+  const handleOpenEnrollments = useCallback((student: Student) => {
+    setEnrollmentStudent(student);
+  }, []);
+
+  const handleCloseEnrollments = () => setEnrollmentStudent(null);
 
   const handleCloseModal = () => setModalState(null);
 
@@ -78,6 +102,11 @@ const StudentsPage = () => {
     }
   };
 
+  const handleEnrollmentSubmit = async (courseId: string) => {
+    if (!enrollmentStudent) return;
+    await enrollMutation.mutateAsync({ studentId: enrollmentStudent.id, courseId });
+  };
+
   const isSubmitting = createStudentMutation.isLoading || updateStudentMutation.isLoading;
   const mutationError =
     (createStudentMutation.error as Error | null) ?? (updateStudentMutation.error as Error | null);
@@ -92,6 +121,29 @@ const StudentsPage = () => {
     () => data?.items ?? [],
     [data?.items]
   );
+
+  const enrollmentRows = useMemo(
+    () =>
+      (enrollmentData ?? []).map((enrollment) => ({
+        id: enrollment.id,
+        courseTitle: enrollment.courseTitle,
+        courseCode: enrollment.courseCode,
+        status: enrollment.status,
+        enrolledAtUtc: enrollment.enrolledAtUtc
+      })),
+    [enrollmentData]
+  );
+
+  const availableCourses = useMemo(() => {
+    if (!coursesData?.items) return [];
+    const enrolledCourseIds = new Set(enrollmentData?.map((enr) => enr.courseId) ?? []);
+    return coursesData.items
+      .filter((course) => !enrolledCourseIds.has(course.id))
+      .map((course) => ({
+        value: course.id,
+        label: `${course.title} (${course.code})`
+      }));
+  }, [coursesData?.items, enrollmentData]);
 
   const totalStudents = data?.totalCount ?? 0;
 
@@ -125,6 +177,7 @@ const StudentsPage = () => {
             loading={isLoading}
             onEdit={handleOpenEdit}
             onDelete={handleDelete}
+            onManageEnrollments={handleOpenEnrollments}
           />
         </Space>
       </div>
@@ -141,6 +194,19 @@ const StudentsPage = () => {
         }
         onCancel={handleCloseModal}
         onSubmit={handleSubmit}
+      />
+      <StudentEnrollmentManager
+        open={enrollmentStudent !== null}
+        studentName={
+          enrollmentStudent ? `${enrollmentStudent.firstName} ${enrollmentStudent.lastName}` : ""
+        }
+        enrollments={enrollmentRows}
+        availableCourses={availableCourses}
+        enrollmentLoading={enrollmentsLoading}
+        submissionLoading={enrollMutation.isLoading}
+        errorMessage={(enrollMutation.error as Error | null)?.message}
+        onSubmit={handleEnrollmentSubmit}
+        onClose={handleCloseEnrollments}
       />
     </>
   );

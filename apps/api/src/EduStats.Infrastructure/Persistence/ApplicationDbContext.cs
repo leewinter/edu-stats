@@ -1,5 +1,6 @@
 using EduStats.Application.Common.Interfaces;
 using EduStats.Domain.Courses;
+using EduStats.Domain.Enrollments;
 using EduStats.Domain.Institutions;
 using EduStats.Domain.Students;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<Course> Courses => Set<Course>();
     public DbSet<Student> Students => Set<Student>();
     public DbSet<InstitutionAddress> InstitutionAddresses => Set<InstitutionAddress>();
+    public DbSet<CourseEnrollment> CourseEnrollments => Set<CourseEnrollment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
