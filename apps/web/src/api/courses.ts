@@ -41,3 +41,7 @@ export const createCourse = async (payload: CourseInput) => {
 export const updateCourse = async (id: string, payload: CourseInput) => {
   await apiClient.put(`/api/courses/${id}`, payload);
 };
+
+export const deleteCourse = async (id: string) => {
+  await apiClient.delete(`/api/courses/${id}`);
+};

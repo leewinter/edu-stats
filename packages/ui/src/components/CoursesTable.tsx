@@ -1,4 +1,4 @@
-import { Button, Table, Typography } from "antd";
+import { Button, Popconfirm, Space, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useMemo } from "react";
 
@@ -16,9 +16,10 @@ export interface CoursesTableProps {
   courses: CourseTableRow[];
   loading?: boolean;
   onEdit?: (course: CourseTableRow) => void;
+  onDelete?: (course: CourseTableRow) => void;
 }
 
-export function CoursesTable({ courses, loading, onEdit }: CoursesTableProps) {
+export function CoursesTable({ courses, loading, onEdit, onDelete }: CoursesTableProps) {
   const columns = useMemo<ColumnsType<CourseTableRow>>(() => {
     const baseColumns: ColumnsType<CourseTableRow> = [
       {
@@ -47,21 +48,38 @@ export function CoursesTable({ courses, loading, onEdit }: CoursesTableProps) {
       }
     ];
 
-    if (onEdit) {
+    if (onEdit || onDelete) {
       baseColumns.push({
         title: "Actions",
         key: "actions",
         align: "right",
         render: (_, record) => (
-          <Button type="link" onClick={() => onEdit(record)}>
-            Edit
-          </Button>
+          <Space size="small">
+            {onEdit && (
+              <Button type="link" onClick={() => onEdit(record)}>
+                Edit
+              </Button>
+            )}
+            {onDelete && (
+              <Popconfirm
+                title="Delete course"
+                description="Are you sure you want to remove this course?"
+                okText="Delete"
+                okType="danger"
+                onConfirm={() => onDelete(record)}
+              >
+                <Button type="link" danger>
+                  Delete
+                </Button>
+              </Popconfirm>
+            )}
+          </Space>
         )
       });
     }
 
     return baseColumns;
-  }, [onEdit]);
+  }, [onDelete, onEdit]);
 
   return (
     <Table

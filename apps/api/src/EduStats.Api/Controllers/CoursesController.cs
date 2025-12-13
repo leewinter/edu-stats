@@ -4,6 +4,7 @@ using EduStats.Application.Courses.Commands.CreateCourse;
 using EduStats.Application.Courses.Commands.UpdateCourse;
 using EduStats.Application.Courses.Dtos;
 using EduStats.Application.Courses.Queries.GetCourses;
+using EduStats.Application.Courses.Commands.DeleteCourse;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -62,6 +63,14 @@ public sealed class CoursesController : ControllerBase
             request.Description);
 
         await _sender.Send(command, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteCourse(Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteCourseCommand(id), cancellationToken);
         return NoContent();
     }
 }
