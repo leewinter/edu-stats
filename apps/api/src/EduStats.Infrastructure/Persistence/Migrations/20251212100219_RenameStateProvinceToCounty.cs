@@ -10,19 +10,31 @@ namespace EduStats.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "StateProvince",
-                table: "institutions",
-                newName: "County");
+            migrationBuilder.Sql(
+                @"DO $$
+                  BEGIN
+                    IF EXISTS (
+                        SELECT 1 FROM information_schema.columns
+                        WHERE table_name = 'institutions' AND column_name = 'StateProvince'
+                    ) THEN
+                        ALTER TABLE ""institutions"" RENAME COLUMN ""StateProvince"" TO ""County"";
+                    END IF;
+                  END $$;");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "County",
-                table: "institutions",
-                newName: "StateProvince");
+            migrationBuilder.Sql(
+                @"DO $$
+                  BEGIN
+                    IF EXISTS (
+                        SELECT 1 FROM information_schema.columns
+                        WHERE table_name = 'institutions' AND column_name = 'County'
+                    ) THEN
+                        ALTER TABLE ""institutions"" RENAME COLUMN ""County"" TO ""StateProvince"";
+                    END IF;
+                  END $$;");
         }
     }
 }

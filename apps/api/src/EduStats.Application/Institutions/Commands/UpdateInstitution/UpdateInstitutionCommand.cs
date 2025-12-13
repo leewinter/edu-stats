@@ -29,10 +29,24 @@ public sealed class UpdateInstitutionCommandHandler : IRequestHandler<UpdateInst
             ?? throw new InvalidOperationException($"Institution {request.Id} was not found");
 
         institution.Update(request.Name, request.Enrollment);
-        var addresses = request.Addresses
+        var addressInputs = request.Addresses
             .Select(a => new InstitutionAddress(a.Line1, a.Line2, a.City, a.County, a.Country, a.PostalCode))
             .ToArray();
-        institution.SetAddresses(addresses);
+
+        if (institution.Addresses.Any())
+        {
+            var existing = institution.Addresses.First();
+            var updated = addressInputs.FirstOrDefault();
+
+            if (updated is not null)
+            {
+                existing.Update(updated.Line1, updated.Line2, updated.City, updated.County, updated.Country, updated.PostalCode);
+            }
+        }
+        else if (addressInputs.Length > 0)
+        {
+            institution.SetAddresses(addressInputs);
+        }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
