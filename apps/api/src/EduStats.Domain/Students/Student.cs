@@ -12,6 +12,7 @@ public sealed class Student : AuditableEntity<Guid>, IAggregateRoot
     public string Email { get; private set; }
     public int EnrollmentYear { get; private set; }
     public string? CourseFocus { get; private set; }
+    public int ActiveEnrollmentCount { get; private set; }
 
     private Student()
     {

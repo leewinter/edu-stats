@@ -11,6 +11,7 @@ export interface StudentTableRow {
   email: string;
   enrollmentYear: number;
   courseFocus?: string | null;
+  activeEnrollmentCount?: number;
 }
 
 export interface StudentsTableProps {
@@ -55,6 +56,13 @@ export function StudentsTable({
         dataIndex: "enrollmentYear",
         key: "enrollmentYear",
         align: "right"
+      },
+      {
+        title: "Active courses",
+        dataIndex: "activeEnrollmentCount",
+        key: "activeEnrollmentCount",
+        align: "right",
+        render: (value?: number) => value ?? 0
       },
       {
         title: "Focus",
