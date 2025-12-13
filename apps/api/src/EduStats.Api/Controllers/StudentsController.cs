@@ -2,6 +2,7 @@ using System.Linq;
 using EduStats.Api.Contracts;
 using EduStats.Application.Common.Models;
 using EduStats.Application.Enrollments.Commands.EnrollStudentInCourse;
+using EduStats.Application.Enrollments.Commands.DropStudentEnrollment;
 using EduStats.Application.Enrollments.Dtos;
 using EduStats.Application.Enrollments.Queries.GetStudentEnrollments;
 using EduStats.Application.Students.Commands.CreateStudent;
@@ -95,4 +96,12 @@ public sealed class StudentsController : ControllerBase
 
     private static CourseEnrollmentResponse MapEnrollment(CourseEnrollmentDto dto) =>
         new(dto.Id, dto.StudentId, dto.CourseId, dto.CourseTitle, dto.CourseCode, dto.Status, dto.EnrolledAtUtc);
+
+    [HttpDelete("{studentId:guid}/enrollments/{enrollmentId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DropEnrollment(Guid studentId, Guid enrollmentId, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DropStudentEnrollmentCommand(studentId, enrollmentId), cancellationToken);
+        return NoContent();
+    }
 }

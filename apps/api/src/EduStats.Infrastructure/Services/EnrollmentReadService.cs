@@ -27,6 +27,10 @@ public sealed class EnrollmentReadService : IEnrollmentReadService
     public async Task<bool> ExistsAsync(Guid studentId, Guid courseId, CancellationToken cancellationToken = default)
     {
         return await _context.CourseEnrollments
-            .AnyAsync(e => e.StudentId == studentId && e.CourseId == courseId, cancellationToken);
+            .AnyAsync(
+                e => e.StudentId == studentId
+                    && e.CourseId == courseId
+                    && e.Status == CourseEnrollmentStatus.Active,
+                cancellationToken);
     }
 }

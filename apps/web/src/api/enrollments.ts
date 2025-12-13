@@ -1,6 +1,6 @@
 import { apiClient } from "./client";
 
-export type CourseEnrollmentStatus = "Active" | "Completed" | "Dropped";
+export type CourseEnrollmentStatus = "Active" | "Completed" | "Dropped" | number;
 
 export interface CourseEnrollment {
   id: string;
@@ -22,4 +22,8 @@ export async function enrollStudent(studentId: string, courseId: string) {
     courseId
   });
   return data;
+}
+
+export async function dropEnrollment(studentId: string, enrollmentId: string) {
+  await apiClient.delete(`/api/students/${studentId}/enrollments/${enrollmentId}`);
 }

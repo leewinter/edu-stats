@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
 import { StudentEnrollmentManager } from "./StudentEnrollmentManager";
 
 const meta: Meta<typeof StudentEnrollmentManager> = {
@@ -29,7 +30,8 @@ const meta: Meta<typeof StudentEnrollmentManager> = {
     availableCourses: [
       { value: "cs101", label: "Computer Science BSc" },
       { value: "ds501", label: "Data Science MSc" }
-    ]
+    ],
+    onDropEnrollment: fn()
   }
 };
 
