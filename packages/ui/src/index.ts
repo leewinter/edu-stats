@@ -35,3 +35,9 @@ export type { StudentsTableProps, StudentTableRow } from "./components/StudentsT
 
 export { StudentFormModal } from "./components/StudentFormModal";
 export type { StudentFormModalProps, StudentFormValues } from "./components/StudentFormModal";
+
+export { StudentEnrollmentManager } from "./components/StudentEnrollmentManager";
+export type {
+  StudentEnrollmentManagerProps,
+  StudentEnrollmentRecord
+} from "./components/StudentEnrollmentManager";

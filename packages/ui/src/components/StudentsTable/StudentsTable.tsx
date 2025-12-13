@@ -18,9 +18,16 @@ export interface StudentsTableProps {
   loading?: boolean;
   onEdit?: (student: StudentTableRow) => void;
   onDelete?: (student: StudentTableRow) => void;
+  onManageEnrollments?: (student: StudentTableRow) => void;
 }
 
-export function StudentsTable({ students, loading, onEdit, onDelete }: StudentsTableProps) {
+export function StudentsTable({
+  students,
+  loading,
+  onEdit,
+  onDelete,
+  onManageEnrollments
+}: StudentsTableProps) {
   const columns = useMemo<ColumnsType<StudentTableRow>>(() => {
     const baseColumns: ColumnsType<StudentTableRow> = [
       {
@@ -57,13 +64,18 @@ export function StudentsTable({ students, loading, onEdit, onDelete }: StudentsT
       }
     ];
 
-    if (onEdit || onDelete) {
+    if (onEdit || onDelete || onManageEnrollments) {
       baseColumns.push({
         title: "Actions",
         key: "actions",
         align: "right",
         render: (_, record) => (
           <Space size="small">
+            {onManageEnrollments && (
+              <Button type="link" onClick={() => onManageEnrollments(record)}>
+                Enrollments
+              </Button>
+            )}
             {onEdit && (
               <Button type="link" onClick={() => onEdit(record)}>
                 Edit
@@ -88,7 +100,7 @@ export function StudentsTable({ students, loading, onEdit, onDelete }: StudentsT
     }
 
     return baseColumns;
-  }, [onDelete, onEdit]);
+  }, [onDelete, onEdit, onManageEnrollments]);
 
   return (
     <Table

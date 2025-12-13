@@ -36,6 +36,13 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class,
                 .Include(x => x.Institution)
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
+        if (typeof(TEntity) == typeof(EduStats.Domain.Enrollments.CourseEnrollment))
+        {
+            return (Task<TEntity?>)(object)_context.CourseEnrollments
+                .Include(x => x.Student)
+                .Include(x => x.Course)
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        }
 
         return _dbSet.FindAsync(new object[] { id }, cancellationToken).AsTask();
     }
@@ -65,6 +72,12 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class,
         {
             query = (IQueryable<TEntity>)((IQueryable<EduStats.Domain.Students.Student>)query)
                 .Include(x => x.Institution);
+        }
+        else if (typeof(TEntity) == typeof(EduStats.Domain.Enrollments.CourseEnrollment))
+        {
+            query = (IQueryable<TEntity>)((IQueryable<EduStats.Domain.Enrollments.CourseEnrollment>)query)
+                .Include(x => x.Student)
+                .Include(x => x.Course);
         }
 
         return await query

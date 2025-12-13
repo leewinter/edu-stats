@@ -31,7 +31,8 @@ const meta: Meta<typeof StudentsTable> = {
   args: {
     students: sampleStudents,
     onEdit: fn(),
-    onDelete: fn()
+    onDelete: fn(),
+    onManageEnrollments: fn()
   },
   parameters: {
     layout: "fullscreen"

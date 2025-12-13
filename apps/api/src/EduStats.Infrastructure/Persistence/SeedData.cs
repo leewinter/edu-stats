@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EduStats.Domain.Courses;
+using EduStats.Domain.Enrollments;
 using EduStats.Domain.Institutions;
 using EduStats.Domain.Students;
 using Microsoft.EntityFrameworkCore;
@@ -126,6 +127,45 @@ public static class SeedData
         }
 
         await context.SaveChangesAsync(cancellationToken);
+
+        var enrollmentSeeds = new[]
+        {
+            new EnrollmentSeed("amelia.hughes@oxford.ac.uk", "CS101"),
+            new EnrollmentSeed("amelia.hughes@oxford.ac.uk", "DS501"),
+            new EnrollmentSeed("noah.patel@cambridge.ac.uk", "ENG401"),
+            new EnrollmentSeed("isla.foster@imperial.ac.uk", "MED601"),
+            new EnrollmentSeed("leo.macdonald@ed.ac.uk", "INF520"),
+            new EnrollmentSeed("olivia.khan@manchester.ac.uk", "MBA710")
+        };
+
+        var studentsByEmail = await context.Students
+            .AsNoTracking()
+            .ToDictionaryAsync(s => s.Email, s => s.Id, cancellationToken);
+
+        var coursesByCode = await context.Courses
+            .AsNoTracking()
+            .ToDictionaryAsync(c => c.Code, c => c.Id, cancellationToken);
+
+        foreach (var enrollment in enrollmentSeeds)
+        {
+            if (!studentsByEmail.TryGetValue(enrollment.StudentEmail, out var studentId) ||
+                !coursesByCode.TryGetValue(enrollment.CourseCode, out var courseId))
+            {
+                continue;
+            }
+
+            var alreadyExists = await context.CourseEnrollments
+                .AnyAsync(e => e.StudentId == studentId && e.CourseId == courseId, cancellationToken);
+
+            if (alreadyExists)
+            {
+                continue;
+            }
+
+            await context.CourseEnrollments.AddAsync(new CourseEnrollment(studentId, courseId), cancellationToken);
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     private static Institution CreateInstitutionWithAddress(InstitutionSeed seed)
@@ -158,4 +198,6 @@ public static class SeedData
         string Email,
         int EnrollmentYear,
         string CourseFocus);
+
+    private sealed record EnrollmentSeed(string StudentEmail, string CourseCode);
 }
