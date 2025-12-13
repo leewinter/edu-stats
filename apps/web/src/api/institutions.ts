@@ -46,3 +46,7 @@ export const createInstitution = async (payload: InstitutionInput) => {
 export const updateInstitution = async (id: string, payload: InstitutionInput) => {
   await apiClient.put(`/api/institutions/${id}`, payload);
 };
+
+export const deleteInstitution = async (id: string) => {
+  await apiClient.delete(`/api/institutions/${id}`);
+};

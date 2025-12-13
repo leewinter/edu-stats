@@ -37,7 +37,8 @@ const meta: Meta<typeof CoursesTable> = {
   component: CoursesTable,
   args: {
     courses: sampleCourses,
-    onEdit: fn()
+    onEdit: fn(),
+    onDelete: fn()
   },
   parameters: {
     layout: "fullscreen"

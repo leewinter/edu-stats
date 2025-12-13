@@ -11,6 +11,7 @@ import { useCourses } from "../hooks/useCourses";
 import { useInstitutions } from "../hooks/useInstitutions";
 import {
   createCourse,
+  deleteCourse,
   updateCourse,
   type Course,
   type CourseInput
@@ -43,6 +44,13 @@ const CoursesPage = () => {
     }
   });
 
+  const deleteCourseMutation = useMutation({
+    mutationFn: deleteCourse,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+    }
+  });
+
   const handleOpenCreate = useCallback(() => {
     setModalState({ mode: "create" });
   }, []);
@@ -50,6 +58,13 @@ const CoursesPage = () => {
   const handleOpenEdit = useCallback((course: Course) => {
     setModalState({ mode: "edit", course });
   }, []);
+
+  const handleDelete = useCallback(
+    async (course: Course) => {
+      await deleteCourseMutation.mutateAsync(course.id);
+    },
+    [deleteCourseMutation]
+  );
 
   function handleCloseModal() {
     setModalState(null);
@@ -117,7 +132,12 @@ const CoursesPage = () => {
               showIcon
             />
           )}
-          <CoursesTable courses={courseRows} loading={isLoading} onEdit={handleOpenEdit} />
+          <CoursesTable
+            courses={courseRows}
+            loading={isLoading}
+            onEdit={handleOpenEdit}
+            onDelete={handleDelete}
+          />
         </Space>
       </div>
       <CourseFormModal

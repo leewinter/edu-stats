@@ -5,6 +5,7 @@ using EduStats.Application.Institutions.Commands.Shared;
 using EduStats.Application.Institutions.Commands.UpdateInstitution;
 using EduStats.Application.Institutions.Dtos;
 using EduStats.Application.Institutions.Queries.GetInstitutions;
+using EduStats.Application.Institutions.Commands.DeleteInstitution;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,6 +51,14 @@ public class InstitutionsController : ControllerBase
             .ToArray();
         var command = new UpdateInstitutionCommand(id, request.Name, request.Enrollment, addressInputs);
         await _sender.Send(command, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteInstitution(Guid id, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteInstitutionCommand(id), cancellationToken);
         return NoContent();
     }
 

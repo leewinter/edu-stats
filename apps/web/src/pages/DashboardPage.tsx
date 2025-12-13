@@ -10,6 +10,7 @@ import {
 import { useInstitutions } from "../hooks/useInstitutions";
 import {
   createInstitution,
+  deleteInstitution,
   updateInstitution,
   type Institution,
   type InstitutionInput
@@ -42,6 +43,13 @@ const DashboardPage = () => {
     }
   });
 
+  const deleteInstitutionMutation = useMutation({
+    mutationFn: deleteInstitution,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["institutions"] });
+    }
+  });
+
   const handleOpenCreate = useCallback(() => {
     setModalState({ mode: "create" });
   }, []);
@@ -49,6 +57,13 @@ const DashboardPage = () => {
   const handleOpenEdit = useCallback((institution: Institution) => {
     setModalState({ mode: "edit", institution });
   }, []);
+
+  const handleDelete = useCallback(
+    async (institution: Institution) => {
+      await deleteInstitutionMutation.mutateAsync(institution.id);
+    },
+    [deleteInstitutionMutation]
+  );
 
   function handleCloseModal() {
     setModalState(null);
@@ -123,6 +138,7 @@ const DashboardPage = () => {
             institutions={data?.items ?? []}
             loading={isLoading}
             onEdit={handleOpenEdit}
+            onDelete={handleDelete}
           />
         </Space>
       </div>

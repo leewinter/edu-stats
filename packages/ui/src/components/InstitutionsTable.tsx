@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Button, Table, Typography } from "antd";
+import { Button, Popconfirm, Space, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
 export interface InstitutionAddressRow {
@@ -22,12 +22,14 @@ export interface InstitutionsTableProps {
   institutions: InstitutionTableRow[];
   loading?: boolean;
   onEdit?: (institution: InstitutionTableRow) => void;
+  onDelete?: (institution: InstitutionTableRow) => void;
 }
 
 export function InstitutionsTable({
   institutions,
   loading,
-  onEdit
+  onEdit,
+  onDelete
 }: InstitutionsTableProps) {
   const columns = useMemo<ColumnsType<InstitutionTableRow>>(() => {
     const baseColumns: ColumnsType<InstitutionTableRow> = [
@@ -63,21 +65,38 @@ export function InstitutionsTable({
       }
     ];
 
-    if (onEdit) {
+    if (onEdit || onDelete) {
       baseColumns.push({
         title: "Actions",
         key: "actions",
         align: "right",
         render: (_, record) => (
-          <Button type="link" onClick={() => onEdit(record)}>
-            Edit
-          </Button>
+          <Space size="small">
+            {onEdit && (
+              <Button type="link" onClick={() => onEdit(record)}>
+                Edit
+              </Button>
+            )}
+            {onDelete && (
+              <Popconfirm
+                title="Delete institution"
+                description="This will remove the institution and its courses."
+                okText="Delete"
+                okType="danger"
+                onConfirm={() => onDelete(record)}
+              >
+                <Button type="link" danger>
+                  Delete
+                </Button>
+              </Popconfirm>
+            )}
+          </Space>
         )
       });
     }
 
     return baseColumns;
-  }, [onEdit]);
+  }, [onDelete, onEdit]);
 
   return (
     <Table

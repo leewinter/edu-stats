@@ -52,7 +52,8 @@ const meta: Meta<typeof InstitutionsTable> = {
   component: InstitutionsTable,
   args: {
     institutions: sampleInstitutions,
-    onEdit: fn()
+    onEdit: fn(),
+    onDelete: fn()
   },
   parameters: {
     layout: "fullscreen"
