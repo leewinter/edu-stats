@@ -155,19 +155,19 @@ const StudentsPage = () => {
   );
 
   const availableCourses = useMemo(() => {
-    if (!coursesData?.items) return [];
+    if (!coursesData) return [];
     const enrolledCourseIds = new Set(
       (enrollmentData ?? [])
         .filter((enr) => formatEnrollmentStatus(enr.status) === "Active")
         .map((enr) => enr.courseId)
     );
-    return coursesData.items
+    return (coursesData.items ?? [])
       .filter((course) => !enrolledCourseIds.has(course.id))
       .map((course) => ({
         value: course.id,
         label: `${course.title} (${course.code})`
       }));
-  }, [coursesData?.items, enrollmentData]);
+  }, [coursesData, enrollmentData]);
 
   const totalStudents = data?.totalCount ?? 0;
 
