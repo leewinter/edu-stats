@@ -29,3 +29,9 @@ export type {
 
 export { NavigationHeader } from "./components/NavigationHeader";
 export type { NavigationHeaderProps } from "./components/NavigationHeader";
+
+export { StudentsTable } from "./components/StudentsTable";
+export type { StudentsTableProps, StudentTableRow } from "./components/StudentsTable";
+
+export { StudentFormModal } from "./components/StudentFormModal";
+export type { StudentFormModalProps, StudentFormValues } from "./components/StudentFormModal";

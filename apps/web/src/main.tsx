@@ -6,6 +6,7 @@ import { queryClient } from "./lib/queryClient";
 import AppLayout from "./layouts/AppLayout";
 import DashboardPage from "./pages/DashboardPage";
 import CoursesPage from "./pages/CoursesPage";
+import StudentsPage from "./pages/StudentsPage";
 import "antd/dist/reset.css";
 import "./index.css";
 
@@ -15,7 +16,8 @@ const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { index: true, element: <DashboardPage /> },
-      { path: "courses", element: <CoursesPage /> }
+      { path: "courses", element: <CoursesPage /> },
+      { path: "students", element: <StudentsPage /> }
     ]
   }
 ]);
