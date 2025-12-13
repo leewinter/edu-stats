@@ -41,7 +41,11 @@ export function StudentsTable({ students, loading, onEdit, onDelete }: StudentsT
       {
         title: "Institution",
         dataIndex: "institutionName",
+<<<<<<< HEAD
         key: "institutionName"
+=======
+        key: "institution"
+>>>>>>> edf7032 (feat: add students feature)
       },
       {
         title: "Enrollment year",
@@ -50,7 +54,11 @@ export function StudentsTable({ students, loading, onEdit, onDelete }: StudentsT
         align: "right"
       },
       {
+<<<<<<< HEAD
         title: "Focus",
+=======
+        title: "Course focus",
+>>>>>>> edf7032 (feat: add students feature)
         dataIndex: "courseFocus",
         key: "courseFocus",
         render: (value?: string | null) => value ?? "—"
