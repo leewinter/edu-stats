@@ -8,4 +8,5 @@ public sealed record StudentDto(
     string LastName,
     string Email,
     int EnrollmentYear,
-    string? CourseFocus);
+    string? CourseFocus,
+    int ActiveEnrollmentCount);

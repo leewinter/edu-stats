@@ -37,7 +37,8 @@ public sealed class GetStudentsQueryHandler : IRequestHandler<GetStudentsQuery, 
                 student.LastName,
                 student.Email,
                 student.EnrollmentYear,
-                student.CourseFocus))
+                student.CourseFocus,
+                student.ActiveEnrollmentCount))
             .ToArray();
 
         return new PagedResult<StudentDto>(dtos, dtos.Length, request.Pagination.PageNumber, request.Pagination.PageSize);

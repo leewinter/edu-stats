@@ -9,20 +9,22 @@ const sampleStudents: StudentTableRow[] = [
     institutionName: "University of Oxford",
     firstName: "Amelia",
     lastName: "Hughes",
-    email: "amelia.hughes@oxford.ac.uk",
-    enrollmentYear: 2023,
-    courseFocus: "Computer Science"
-  },
-  {
-    id: "2",
+  email: "amelia.hughes@oxford.ac.uk",
+  enrollmentYear: 2023,
+  courseFocus: "Computer Science",
+  activeEnrollmentCount: 2
+},
+{
+  id: "2",
     institutionId: "cambridge",
     institutionName: "University of Cambridge",
     firstName: "Noah",
     lastName: "Patel",
-    email: "noah.patel@cam.ac.uk",
-    enrollmentYear: 2022,
-    courseFocus: "Engineering"
-  }
+  email: "noah.patel@cam.ac.uk",
+  enrollmentYear: 2022,
+  courseFocus: "Engineering",
+  activeEnrollmentCount: 1
+}
 ];
 
 const meta: Meta<typeof StudentsTable> = {
