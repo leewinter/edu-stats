@@ -12,6 +12,7 @@ export interface NavigationHeaderProps {
   menuItems?: MenuProps["items"];
   selectedKey?: string;
   extra?: ReactNode;
+  onSelect?: (key: string) => void;
 }
 
 export const NavigationHeader = ({
@@ -19,7 +20,8 @@ export const NavigationHeader = ({
   subtitle,
   menuItems,
   selectedKey,
-  extra
+  extra,
+  onSelect
 }: NavigationHeaderProps) => {
   const normalizedMenuItems: MenuItems = Array.isArray(menuItems)
     ? (menuItems as MenuItems)
@@ -77,7 +79,8 @@ export const NavigationHeader = ({
               trigger={["click"]}
               menu={{
                 items: normalizedMenuItems,
-                selectedKeys: selectedKey ? [selectedKey] : undefined
+                selectedKeys: selectedKey ? [selectedKey] : undefined,
+                onClick: ({ key }) => onSelect?.(String(key))
               }}
             >
               <Button
@@ -94,6 +97,7 @@ export const NavigationHeader = ({
               theme="dark"
               selectedKeys={selectedKey ? [selectedKey] : undefined}
               items={normalizedMenuItems}
+              onClick={({ key }) => onSelect?.(String(key))}
               style={{
                 background: "transparent",
                 border: "none",

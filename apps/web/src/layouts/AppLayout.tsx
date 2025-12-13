@@ -1,11 +1,12 @@
 import { Layout } from "antd";
 import type { MenuProps } from "antd";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { NavigationHeader } from "@edu-stats/ui";
 import "../App.css";
 
 const AppLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const selectedKey = location.pathname.startsWith("/courses")
     ? "courses"
     : location.pathname.startsWith("/students")
@@ -15,15 +16,15 @@ const AppLayout = () => {
   const menuItems: MenuProps["items"] = [
     {
       key: "dashboard",
-      label: <Link to="/">Dashboard</Link>
+      label: "Dashboard"
     },
     {
       key: "courses",
-      label: <Link to="/courses">Courses</Link>
+      label: "Courses"
     },
     {
       key: "students",
-      label: <Link to="/students">Students</Link>
+      label: "Students"
     }
   ];
 
@@ -34,6 +35,13 @@ const AppLayout = () => {
         subtitle="Higher education insights powered by the Edu Stats API"
         menuItems={menuItems}
         selectedKey={selectedKey}
+        onSelect={(key) => {
+          if (key === "dashboard") {
+            navigate("/");
+          } else {
+            navigate(`/${key}`);
+          }
+        }}
       />
       <Layout.Content>
         <Outlet />
