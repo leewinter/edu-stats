@@ -19,7 +19,11 @@ import {
   type Student,
   type StudentInput
 } from "../api/students";
-import { enrollStudent as enrollStudentApi } from "../api/enrollments";
+import {
+  enrollStudent as enrollStudentApi,
+  dropEnrollment,
+  type CourseEnrollmentStatus
+} from "../api/enrollments";
 import "../App.css";
 
 type StudentModalState =
@@ -69,6 +73,14 @@ const StudentsPage = () => {
     }
   });
 
+  const dropEnrollmentMutation = useMutation({
+    mutationFn: ({ studentId, enrollmentId }: { studentId: string; enrollmentId: string }) =>
+      dropEnrollment(studentId, enrollmentId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["student-enrollments", variables.studentId] });
+    }
+  });
+
   const handleOpenCreate = useCallback(() => {
     setModalState({ mode: "create" });
   }, []);
@@ -107,6 +119,14 @@ const StudentsPage = () => {
     await enrollMutation.mutateAsync({ studentId: enrollmentStudent.id, courseId });
   };
 
+  const handleEnrollmentDrop = async (enrollmentId: string) => {
+    if (!enrollmentStudent) return;
+    await dropEnrollmentMutation.mutateAsync({
+      studentId: enrollmentStudent.id,
+      enrollmentId
+    });
+  };
+
   const isSubmitting = createStudentMutation.isLoading || updateStudentMutation.isLoading;
   const mutationError =
     (createStudentMutation.error as Error | null) ?? (updateStudentMutation.error as Error | null);
@@ -128,22 +148,26 @@ const StudentsPage = () => {
         id: enrollment.id,
         courseTitle: enrollment.courseTitle,
         courseCode: enrollment.courseCode,
-        status: enrollment.status,
+        status: formatEnrollmentStatus(enrollment.status),
         enrolledAtUtc: enrollment.enrolledAtUtc
       })),
     [enrollmentData]
   );
 
   const availableCourses = useMemo(() => {
-    if (!coursesData?.items) return [];
-    const enrolledCourseIds = new Set(enrollmentData?.map((enr) => enr.courseId) ?? []);
-    return coursesData.items
+    if (!coursesData) return [];
+    const enrolledCourseIds = new Set(
+      (enrollmentData ?? [])
+        .filter((enr) => formatEnrollmentStatus(enr.status) === "Active")
+        .map((enr) => enr.courseId)
+    );
+    return (coursesData.items ?? [])
       .filter((course) => !enrolledCourseIds.has(course.id))
       .map((course) => ({
         value: course.id,
         label: `${course.title} (${course.code})`
       }));
-  }, [coursesData?.items, enrollmentData]);
+  }, [coursesData, enrollmentData]);
 
   const totalStudents = data?.totalCount ?? 0;
 
@@ -204,8 +228,12 @@ const StudentsPage = () => {
         availableCourses={availableCourses}
         enrollmentLoading={enrollmentsLoading}
         submissionLoading={enrollMutation.isLoading}
-        errorMessage={(enrollMutation.error as Error | null)?.message}
+        errorMessage={
+          (enrollMutation.error as Error | null)?.message ??
+          (dropEnrollmentMutation.error as Error | null)?.message
+        }
         onSubmit={handleEnrollmentSubmit}
+        onDropEnrollment={handleEnrollmentDrop}
         onClose={handleCloseEnrollments}
       />
     </>
@@ -234,4 +262,21 @@ function mapStudentToFormValues(student: Student): StudentFormValues {
     enrollmentYear: student.enrollmentYear,
     courseFocus: student.courseFocus ?? ""
   };
+}
+
+function formatEnrollmentStatus(status: CourseEnrollmentStatus) {
+  if (typeof status === "string") {
+    return status;
+  }
+
+  switch (status) {
+    case 1:
+      return "Active";
+    case 2:
+      return "Completed";
+    case 3:
+      return "Dropped";
+    default:
+      return "Active";
+  }
 }

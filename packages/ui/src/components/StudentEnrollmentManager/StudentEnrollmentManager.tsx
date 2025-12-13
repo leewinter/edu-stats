@@ -19,6 +19,7 @@ export interface StudentEnrollmentManagerProps {
   submissionLoading?: boolean;
   errorMessage?: string;
   onSubmit: (courseId: string) => void;
+  onDropEnrollment?: (enrollmentId: string) => void;
   onClose: () => void;
 }
 
@@ -31,13 +32,14 @@ export const StudentEnrollmentManager = ({
   submissionLoading,
   errorMessage,
   onSubmit,
+  onDropEnrollment,
   onClose
 }: StudentEnrollmentManagerProps) => {
   const [form] = Form.useForm<{ courseId: string }>();
   const [selectedCourseId, setSelectedCourseId] = useState<string>();
 
-  const columns = useMemo<TableColumnsType<StudentEnrollmentRecord>>(
-    () => [
+  const columns = useMemo<TableColumnsType<StudentEnrollmentRecord>>(() => {
+    const base: TableColumnsType<StudentEnrollmentRecord> = [
       {
         title: "Course",
         dataIndex: "courseTitle",
@@ -63,9 +65,28 @@ export const StudentEnrollmentManager = ({
         key: "enrolledAtUtc",
         render: (value: string) => new Date(value).toLocaleDateString()
       }
-    ],
-    []
-  );
+    ];
+
+    if (onDropEnrollment) {
+      base.push({
+        title: "Actions",
+        key: "actions",
+        align: "right",
+        render: (_, record) => (
+          <Button
+            type="link"
+            danger
+            disabled={record.status?.toLowerCase() === "dropped"}
+            onClick={() => onDropEnrollment(record.id)}
+          >
+            Remove
+          </Button>
+        )
+      });
+    }
+
+    return base;
+  }, [onDropEnrollment]);
 
   const handleSubmit = (values: { courseId: string }) => {
     onSubmit(values.courseId);
