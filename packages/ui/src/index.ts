@@ -53,3 +53,6 @@ export type {
   EnrollmentStatusChartProps,
   EnrollmentStatusDatum
 } from "./components/EnrollmentStatusChart";
+
+export { MiniMetricCard } from "./components/MiniMetricCard";
+export type { MiniMetricCardProps } from "./components/MiniMetricCard";
