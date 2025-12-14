@@ -10,6 +10,12 @@ const config: StorybookConfig = {
   },
   docs: {
     autodocs: "tag"
+  },
+  viteFinal: async (viteConfig, { configType }) => {
+    if (configType === "PRODUCTION") {
+      viteConfig.base = "/edu-stats/storybook/";
+    }
+    return viteConfig;
   }
 };
 
