@@ -7,7 +7,8 @@ import {
   InstitutionsTable,
   StatisticsCard,
   CoursePerformanceTable,
-  EnrollmentStatusChart
+  EnrollmentStatusChart,
+  MiniMetricCard
 } from "@edu-stats/ui";
 import { useInstitutions } from "../hooks/useInstitutions";
 import { useCourseStats } from "../hooks/useCourseStats";
@@ -97,11 +98,43 @@ const DashboardPage = () => {
     (updateInstitutionMutation.error as Error | null);
   const mutationErrorMessage = mutationError?.message;
 
+  const formatNumber = useCallback(
+    (value: number) => value.toLocaleString("en-GB"),
+    []
+  );
+
   const totalInstitutions = data?.totalCount ?? 0;
   const totalEnrollment = useMemo(
     () => data?.items.reduce((acc, inst) => acc + inst.enrollment, 0) ?? 0,
     [data?.items]
   );
+  const totalActiveEnrollments = useMemo(
+    () => courseStats?.reduce((sum, stat) => sum + stat.activeEnrollments, 0) ?? 0,
+    [courseStats]
+  );
+  const totalCompletedEnrollments = useMemo(
+    () => courseStats?.reduce((sum, stat) => sum + stat.completedEnrollments, 0) ?? 0,
+    [courseStats]
+  );
+  const totalDroppedEnrollments = useMemo(
+    () => courseStats?.reduce((sum, stat) => sum + stat.droppedEnrollments, 0) ?? 0,
+    [courseStats]
+  );
+  const totalCapacity = useMemo(
+    () => courseStats?.reduce((sum, stat) => sum + (stat.capacity ?? 0), 0) ?? 0,
+    [courseStats]
+  );
+  const utilization = totalCapacity > 0
+    ? Math.min((totalActiveEnrollments / totalCapacity) * 100, 999).toFixed(1)
+    : "0";
+  const completionRate = (() => {
+    const denominator = totalActiveEnrollments + totalCompletedEnrollments + totalDroppedEnrollments;
+    return denominator > 0 ? ((totalCompletedEnrollments / denominator) * 100).toFixed(1) : "0";
+  })();
+  const globalDropRate = (() => {
+    const denominator = totalActiveEnrollments + totalCompletedEnrollments + totalDroppedEnrollments;
+    return denominator > 0 ? ((totalDroppedEnrollments / denominator) * 100).toFixed(1) : "0";
+  })();
 
   const courseRows = useMemo(
     () =>
@@ -174,6 +207,37 @@ const DashboardPage = () => {
               Add institution
             </Button>
           </Space>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: 16
+            }}
+          >
+            <MiniMetricCard
+              title="Active enrollments"
+              value={formatNumber(totalActiveEnrollments)}
+              deltaLabel={`${utilization}% capacity used`}
+              deltaType="positive"
+            />
+            <MiniMetricCard
+              title="Completed enrollments"
+              value={formatNumber(totalCompletedEnrollments)}
+              deltaLabel={`${completionRate}% completion`}
+              deltaType="positive"
+            />
+            <MiniMetricCard
+              title="Dropped enrollments"
+              value={formatNumber(totalDroppedEnrollments)}
+              deltaLabel={`${globalDropRate}% drop rate`}
+              deltaType="negative"
+            />
+            <MiniMetricCard
+              title="Total capacity"
+              value={formatNumber(totalCapacity)}
+              caption="Summed across all active courses"
+            />
+          </div>
           {isError && (
             <Alert
               type="error"
