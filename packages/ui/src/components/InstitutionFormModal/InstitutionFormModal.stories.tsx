@@ -13,7 +13,7 @@ const baseArgs = {
 };
 
 const meta: Meta<typeof InstitutionFormModal> = {
-  title: "Dashboard/InstitutionFormModal",
+  title: "Forms/InstitutionFormModal",
   component: InstitutionFormModal,
   args: baseArgs
 };

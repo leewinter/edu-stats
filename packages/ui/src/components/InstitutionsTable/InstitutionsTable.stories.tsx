@@ -48,7 +48,7 @@ const sampleInstitutions: InstitutionTableRow[] = [
 ];
 
 const meta: Meta<typeof InstitutionsTable> = {
-  title: "Dashboard/InstitutionsTable",
+  title: "Institutions/InstitutionsTable",
   component: InstitutionsTable,
   args: {
     institutions: sampleInstitutions,
