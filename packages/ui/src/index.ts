@@ -47,3 +47,9 @@ export type {
   CoursePerformanceTableProps,
   CoursePerformanceRow
 } from "./components/CoursePerformanceTable";
+
+export { EnrollmentStatusChart } from "./components/EnrollmentStatusChart";
+export type {
+  EnrollmentStatusChartProps,
+  EnrollmentStatusDatum
+} from "./components/EnrollmentStatusChart";

@@ -6,7 +6,8 @@ import {
   type InstitutionFormValues,
   InstitutionsTable,
   StatisticsCard,
-  CoursePerformanceTable
+  CoursePerformanceTable,
+  EnrollmentStatusChart
 } from "@edu-stats/ui";
 import { useInstitutions } from "../hooks/useInstitutions";
 import { useCourseStats } from "../hooks/useCourseStats";
@@ -117,6 +118,31 @@ const DashboardPage = () => {
     [courseStats]
   );
 
+  const chartData = useMemo(() => {
+    const grouped = new Map<
+      string,
+      { label: string; active: number; completed: number; dropped: number }
+    >();
+
+    (courseStats ?? []).forEach((stat) => {
+      const key = stat.institutionName;
+      if (!grouped.has(key)) {
+        grouped.set(key, {
+          label: key,
+          active: 0,
+          completed: 0,
+          dropped: 0
+        });
+      }
+      const entry = grouped.get(key)!;
+      entry.active += stat.activeEnrollments;
+      entry.completed += stat.completedEnrollments;
+      entry.dropped += stat.droppedEnrollments;
+    });
+
+    return Array.from(grouped.values()).sort((a, b) => b.active - a.active).slice(0, 5);
+  }, [courseStats]);
+
   return (
     <>
       <div className="app-content">
@@ -162,22 +188,31 @@ const DashboardPage = () => {
             onEdit={handleOpenEdit}
             onDelete={handleDelete}
           />
-          <Card>
-            <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-              <Typography.Title level={4} style={{ margin: 0 }}>
-                Course performance
-              </Typography.Title>
-              {statsError && (
-                <Alert
-                  type="error"
-                  message="Unable to load course performance"
-                  description="Ensure the API is reachable."
-                  showIcon
-                />
-              )}
-              <CoursePerformanceTable data={courseRows} loading={statsLoading} />
-            </Space>
-          </Card>
+          <Space direction="vertical" size="large" style={{ width: "100%" }}>
+            <Card>
+              <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+                <Typography.Title level={4} style={{ margin: 0 }}>
+                  Course performance
+                </Typography.Title>
+                {statsError && (
+                  <Alert
+                    type="error"
+                    message="Unable to load course performance"
+                    description="Ensure the API is reachable."
+                    showIcon
+                  />
+                )}
+                <CoursePerformanceTable data={courseRows} loading={statsLoading} />
+              </Space>
+            </Card>
+            {chartData.length > 0 && (
+              <EnrollmentStatusChart
+                title="Enrollment by institution"
+                data={chartData}
+                height={260}
+              />
+            )}
+          </Space>
         </Space>
       </div>
       <InstitutionFormModal
