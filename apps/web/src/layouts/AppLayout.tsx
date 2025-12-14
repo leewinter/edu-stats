@@ -2,6 +2,7 @@ import { Layout } from "antd";
 import type { MenuProps } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { NavigationHeader } from "@edu-stats/ui";
+import eduStatsLogo from "../assets/edu-stats-logo.svg";
 import "../App.css";
 
 const AppLayout = () => {
@@ -35,6 +36,9 @@ const AppLayout = () => {
         subtitle="Higher education insights powered by the Edu Stats API"
         menuItems={menuItems}
         selectedKey={selectedKey}
+        logoSrc={eduStatsLogo}
+        logoAlt="Edu Stats logo"
+        onLogoClick={() => navigate("/")}
         onSelect={(key) => {
           if (key === "dashboard") {
             navigate("/");

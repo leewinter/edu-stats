@@ -61,6 +61,13 @@ flowchart LR
 
 Each project will gain its own `README.md` as features evolve, documenting decisions and commands relevant to that slice.
 
+## Brand assets
+
+- Primary logomark: `apps/web/src/assets/edu-stats-logo.svg`
+- Storybook/static usage: `packages/ui/public/edu-stats-logo.svg`
+
+The React client imports the SVG directly so edits automatically hot reload. Storybook serves from `packages/ui/public`, which is registered as a static directory so the same artwork appears in the component docs header.
+
 ## Docker Compose
 
 The provided `docker-compose.yml` wires up the shared infrastructure and placeholders for the API + client services. Highlights:

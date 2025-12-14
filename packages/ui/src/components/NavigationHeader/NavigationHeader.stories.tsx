@@ -18,6 +18,8 @@ export const Default: Story = {
     title: "Edu Stats Explorer",
     subtitle: "Higher education insights powered by the Edu Stats API",
     selectedKey: "dashboard",
+    logoSrc: "edu-stats-logo.svg",
+    logoHref: "#",
     menuItems: [
       { key: "dashboard", label: "Dashboard" },
       { key: "courses", label: "Courses" }
