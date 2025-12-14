@@ -3,6 +3,7 @@ using EduStats.Api.Contracts;
 using EduStats.Application.Common.Models;
 using EduStats.Application.Enrollments.Commands.EnrollStudentInCourse;
 using EduStats.Application.Enrollments.Commands.DropStudentEnrollment;
+using EduStats.Application.Enrollments.Commands.CompleteStudentEnrollment;
 using EduStats.Application.Enrollments.Dtos;
 using EduStats.Application.Enrollments.Queries.GetStudentEnrollments;
 using EduStats.Application.Students.Commands.CreateStudent;
@@ -102,6 +103,14 @@ public sealed class StudentsController : ControllerBase
     public async Task<IActionResult> DropEnrollment(Guid studentId, Guid enrollmentId, CancellationToken cancellationToken)
     {
         await _sender.Send(new DropStudentEnrollmentCommand(studentId, enrollmentId), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPost("{studentId:guid}/enrollments/{enrollmentId:guid}/complete")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> CompleteEnrollment(Guid studentId, Guid enrollmentId, CancellationToken cancellationToken)
+    {
+        await _sender.Send(new CompleteStudentEnrollmentCommand(studentId, enrollmentId), cancellationToken);
         return NoContent();
     }
 }

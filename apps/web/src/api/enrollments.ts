@@ -27,3 +27,7 @@ export async function enrollStudent(studentId: string, courseId: string) {
 export async function dropEnrollment(studentId: string, enrollmentId: string) {
   await apiClient.delete(`/api/students/${studentId}/enrollments/${enrollmentId}`);
 }
+
+export async function completeEnrollment(studentId: string, enrollmentId: string) {
+  await apiClient.post(`/api/students/${studentId}/enrollments/${enrollmentId}/complete`);
+}
