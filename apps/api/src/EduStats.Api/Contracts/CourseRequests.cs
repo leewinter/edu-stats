@@ -14,3 +14,13 @@ public sealed record UpdateCourseRequest(
     string Level,
     int Credits,
     string? Description);
+
+public sealed record CourseStatsResponse(
+    Guid CourseId,
+    Guid InstitutionId,
+    string InstitutionName,
+    string Title,
+    string Code,
+    int ActiveEnrollments,
+    int CompletedEnrollments,
+    int DroppedEnrollments);

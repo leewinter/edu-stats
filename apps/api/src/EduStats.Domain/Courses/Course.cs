@@ -1,6 +1,7 @@
 using System;
 using EduStats.Domain.Common;
 using EduStats.Domain.Institutions;
+using EduStats.Domain.Enrollments;
 
 namespace EduStats.Domain.Courses;
 
@@ -14,6 +15,7 @@ public sealed class Course : AuditableEntity<Guid>, IAggregateRoot
     public string Level { get; private set; }
     public int Credits { get; private set; }
     public string? Description { get; private set; }
+    public ICollection<CourseEnrollment> CourseEnrollments { get; private set; } = new List<CourseEnrollment>();
 
     private Course()
     {

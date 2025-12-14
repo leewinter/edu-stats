@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped(typeof(IReadRepository<>), typeof(EfRepository<>));
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped<IEnrollmentReadService, EnrollmentReadService>();
+        services.AddScoped<ICourseStatisticsProvider, CourseStatisticsProvider>();
 
         services.Configure<RabbitMqOptions>(configuration.GetSection(RabbitMqOptions.SectionName));
         services.AddSingleton<IEventPublisher, RabbitMqEventPublisher>();

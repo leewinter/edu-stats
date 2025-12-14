@@ -5,6 +5,7 @@ using EduStats.Application.Courses.Commands.UpdateCourse;
 using EduStats.Application.Courses.Dtos;
 using EduStats.Application.Courses.Queries.GetCourses;
 using EduStats.Application.Courses.Commands.DeleteCourse;
+using EduStats.Application.Courses.Queries.GetCourseStats;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -72,5 +73,24 @@ public sealed class CoursesController : ControllerBase
     {
         await _sender.Send(new DeleteCourseCommand(id), cancellationToken);
         return NoContent();
+    }
+
+    [HttpGet("stats")]
+    [ProducesResponseType(typeof(IEnumerable<CourseStatsResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<CourseStatsResponse>>> GetCourseStats(
+        [FromQuery] Guid? institutionId,
+        CancellationToken cancellationToken)
+    {
+        var stats = await _sender.Send(new GetCourseStatsQuery(institutionId), cancellationToken);
+        var response = stats.Select(s => new CourseStatsResponse(
+            s.CourseId,
+            s.InstitutionId,
+            s.InstitutionName,
+            s.Title,
+            s.Code,
+            s.ActiveEnrollments,
+            s.CompletedEnrollments,
+            s.DroppedEnrollments));
+        return Ok(response);
     }
 }
