@@ -140,7 +140,7 @@ const DashboardPage = () => {
       entry.dropped += stat.droppedEnrollments;
     });
 
-    return Array.from(grouped.values()).sort((a, b) => b.active - a.active).slice(0, 5);
+    return Array.from(grouped.values()).sort((a, b) => b.active - a.active);
   }, [courseStats]);
 
   return (
@@ -210,6 +210,7 @@ const DashboardPage = () => {
                 title="Enrollment by institution"
                 data={chartData}
                 height={260}
+                limit={10}
               />
             )}
           </Space>

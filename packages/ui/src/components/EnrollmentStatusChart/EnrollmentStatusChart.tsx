@@ -11,6 +11,7 @@ export interface EnrollmentStatusChartProps {
   title?: string;
   data: EnrollmentStatusDatum[];
   height?: number;
+  limit?: number;
 }
 
 const colors = {
@@ -22,9 +23,11 @@ const colors = {
 export const EnrollmentStatusChart = ({
   title = "Enrollment mix",
   data,
-  height = 220
+  height = 220,
+  limit
 }: EnrollmentStatusChartProps) => {
-  const max = Math.max(...data.map((d) => d.active + d.completed + d.dropped), 1);
+  const limitedData = limit ? data.slice(0, limit) : data;
+  const max = Math.max(...limitedData.map((d) => d.active + d.completed + d.dropped), 1);
 
   return (
     <Card>
@@ -32,21 +35,32 @@ export const EnrollmentStatusChart = ({
         <Typography.Title level={5} style={{ marginBottom: 0 }}>
           {title}
         </Typography.Title>
-        <div
-          style={{
-            height,
-            display: "flex",
-            alignItems: "flex-end",
-            gap: 16,
-            padding: "0 4px"
-          }}
-        >
-          {data.map((datum) => {
-            const total = datum.active + datum.completed + datum.dropped;
-            const barHeight = Math.max((total / max) * (height - 40), 4);
+        <div style={{ overflowX: "auto", paddingBottom: 8 }}>
+          <div
+            style={{
+              height,
+              minWidth: Math.max(limitedData.length * 110, 320),
+              width: limitedData.length <= 5 ? "100%" : undefined,
+              display: "flex",
+              alignItems: "flex-end",
+              gap: 16,
+              padding: "0 4px"
+            }}
+          >
+            {limitedData.map((datum) => {
+              const total = datum.active + datum.completed + datum.dropped;
+              const barHeight = Math.max((total / max) * (height - 40), 4);
 
-            return (
-              <div key={datum.label} style={{ flex: 1, textAlign: "center" }}>
+              return (
+                <div
+                  key={datum.label}
+                style={{
+                  flex: limitedData.length <= 5 ? "1 1 0" : undefined,
+                  width: limitedData.length <= 5 ? undefined : 110,
+                  minWidth: limitedData.length <= 5 ? undefined : 110,
+                  textAlign: "center"
+                }}
+              >
                 <div
                   style={{
                     height: barHeight,
@@ -86,6 +100,7 @@ export const EnrollmentStatusChart = ({
               </div>
             );
           })}
+          </div>
         </div>
         <Space size="small">
           <Tag color={colors.active}>Active</Tag>
