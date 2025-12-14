@@ -49,6 +49,20 @@ jobs:
           rm -rf storybook-dist
           mkdir -p storybook-dist/storybook
           cp -R storybook-static/* storybook-dist/storybook/
+          cat <<'EOF' > storybook-dist/index.html
+          <!DOCTYPE html>
+          <html lang="en">
+            <head>
+              <meta charset="UTF-8" />
+              <meta http-equiv="refresh" content="0; url=./storybook/" />
+              <title>Edu Stats Storybook</title>
+              <script>window.location.replace(window.location.href.replace(/\/?$/, "/storybook/"));</script>
+            </head>
+            <body>
+              <p>Redirecting to <a href="./storybook/">Storybook</a>...</p>
+            </body>
+          </html>
+          EOF
 
       - name: Upload Storybook artifact
         uses: actions/upload-pages-artifact@v3
