@@ -15,6 +15,7 @@ public sealed class Course : AuditableEntity<Guid>, IAggregateRoot
     public string Level { get; private set; }
     public int Credits { get; private set; }
     public string? Description { get; private set; }
+    public int? Capacity { get; private set; }
     public ICollection<CourseEnrollment> CourseEnrollments { get; private set; } = new List<CourseEnrollment>();
 
     private Course()
@@ -24,7 +25,7 @@ public sealed class Course : AuditableEntity<Guid>, IAggregateRoot
         Level = string.Empty;
     }
 
-    public Course(Guid institutionId, string title, string code, string level, int credits, string? description)
+    public Course(Guid institutionId, string title, string code, string level, int credits, string? description, int? capacity = null)
     {
         Id = Guid.NewGuid();
         InstitutionId = institutionId;
@@ -33,14 +34,16 @@ public sealed class Course : AuditableEntity<Guid>, IAggregateRoot
         Level = level;
         Credits = credits;
         Description = description;
+        Capacity = capacity;
     }
 
-    public void Update(string title, string code, string level, int credits, string? description)
+    public void Update(string title, string code, string level, int credits, string? description, int? capacity)
     {
         Title = title;
         Code = code;
         Level = level;
         Credits = credits;
         Description = description;
+        Capacity = capacity;
     }
 }

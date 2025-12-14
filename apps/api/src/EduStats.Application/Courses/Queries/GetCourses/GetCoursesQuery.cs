@@ -38,7 +38,8 @@ public sealed class GetCoursesQueryHandler : IRequestHandler<GetCoursesQuery, Pa
                 course.Code,
                 course.Level,
                 course.Credits,
-                course.Description))
+                course.Description,
+                course.Capacity))
             .ToArray();
 
         return new PagedResult<CourseDto>(

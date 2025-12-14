@@ -8,4 +8,5 @@ public sealed record CourseStatsDto(
     string Code,
     int ActiveEnrollments,
     int CompletedEnrollments,
-    int DroppedEnrollments);
+    int DroppedEnrollments,
+    int? Capacity);

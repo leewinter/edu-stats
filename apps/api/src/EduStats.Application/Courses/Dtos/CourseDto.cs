@@ -7,4 +7,5 @@ public sealed record CourseDto(
     string Code,
     string Level,
     int Credits,
-    string? Description);
+    string? Description,
+    int? Capacity);

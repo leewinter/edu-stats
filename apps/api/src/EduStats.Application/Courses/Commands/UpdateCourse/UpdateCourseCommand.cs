@@ -10,7 +10,8 @@ public sealed record UpdateCourseCommand(
     string Code,
     string Level,
     int Credits,
-    string? Description) : IRequest;
+    string? Description,
+    int? Capacity) : IRequest;
 
 public sealed class UpdateCourseCommandHandler : IRequestHandler<UpdateCourseCommand>
 {
@@ -28,7 +29,7 @@ public sealed class UpdateCourseCommandHandler : IRequestHandler<UpdateCourseCom
         var course = await _repository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new InvalidOperationException($"Course {request.Id} was not found.");
 
-        course.Update(request.Title, request.Code, request.Level, request.Credits, request.Description);
+        course.Update(request.Title, request.Code, request.Level, request.Credits, request.Description, request.Capacity);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return Unit.Value;

@@ -8,6 +8,7 @@ export interface CourseFormValues {
   level: string;
   credits: number;
   description?: string;
+  capacity?: number | null;
 }
 
 export interface CourseFormModalProps {
@@ -42,7 +43,8 @@ export function CourseFormModal({
           code: "",
           level: "",
           credits: 0,
-          description: ""
+          description: "",
+          capacity: undefined
         }
       );
     } else {
@@ -119,6 +121,14 @@ export function CourseFormModal({
         </Form.Item>
         <Form.Item label="Description" name="description">
           <Input.TextArea rows={3} placeholder="Optional description" />
+        </Form.Item>
+        <Form.Item
+          label="Capacity"
+          name="capacity"
+          tooltip="Leave blank if unlimited"
+          rules={[{ type: "number", min: 1, message: "Capacity must be positive" }]}
+        >
+          <InputNumber style={{ width: "100%" }} placeholder="Optional capacity" />
         </Form.Item>
       </Form>
     </Modal>
