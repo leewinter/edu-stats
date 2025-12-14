@@ -1,5 +1,5 @@
 import { Space, Table, Tag, Typography } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 
 export interface CoursePerformanceRow {
   courseId: string;
@@ -15,19 +15,30 @@ export interface CoursePerformanceRow {
 export interface CoursePerformanceTableProps {
   data: CoursePerformanceRow[];
   loading?: boolean;
+  pageSize?: number;
+  pageSizeOptions?: number[];
+  showSizeChanger?: boolean;
 }
 
-export const CoursePerformanceTable = ({ data, loading }: CoursePerformanceTableProps) => {
+export const CoursePerformanceTable = ({
+  data,
+  loading,
+  pageSize = 10,
+  pageSizeOptions = [10, 20, 50],
+  showSizeChanger = true
+}: CoursePerformanceTableProps) => {
   const columns: ColumnsType<CoursePerformanceRow> = [
     {
       title: "Course",
       dataIndex: "title",
       key: "title",
+      sorter: (a, b) => a.title.localeCompare(b.title),
+      defaultSortOrder: "ascend",
       render: (value: string, record) => (
         <div>
           <Typography.Text strong>{value}</Typography.Text>
           <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-            {record.code} · {record.institutionName}
+            {record.code} - {record.institutionName}
           </Typography.Paragraph>
         </div>
       )
@@ -36,28 +47,32 @@ export const CoursePerformanceTable = ({ data, loading }: CoursePerformanceTable
       title: "Active",
       dataIndex: "activeEnrollments",
       key: "activeEnrollments",
-      align: "right"
+      align: "right",
+      sorter: (a, b) => a.activeEnrollments - b.activeEnrollments
     },
     {
       title: "Completed",
       dataIndex: "completedEnrollments",
       key: "completedEnrollments",
-      align: "right"
+      align: "right",
+      sorter: (a, b) => a.completedEnrollments - b.completedEnrollments
     },
     {
       title: "Dropped",
       dataIndex: "droppedEnrollments",
       key: "droppedEnrollments",
-      align: "right"
+      align: "right",
+      sorter: (a, b) => a.droppedEnrollments - b.droppedEnrollments
     },
     {
       title: "Capacity",
       dataIndex: "capacity",
       key: "capacity",
       align: "right",
+      sorter: (a, b) => (a.capacity ?? 0) - (b.capacity ?? 0),
       render: (value: number | null | undefined, record) => {
         if (!value) {
-          return "—";
+          return "-";
         }
 
         const overSubscribed = record.activeEnrollments > value;
@@ -72,13 +87,21 @@ export const CoursePerformanceTable = ({ data, loading }: CoursePerformanceTable
     }
   ];
 
+  const pagination: TablePaginationConfig = {
+    pageSize,
+    showSizeChanger,
+    pageSizeOptions: pageSizeOptions.map((size) => size.toString()),
+    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`
+  };
+
   return (
     <Table
       rowKey="courseId"
       columns={columns}
       dataSource={data}
       loading={loading}
-      pagination={false}
+      pagination={pagination}
     />
   );
 };
+
