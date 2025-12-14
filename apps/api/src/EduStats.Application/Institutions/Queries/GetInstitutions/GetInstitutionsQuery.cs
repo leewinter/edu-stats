@@ -23,11 +23,10 @@ public sealed class GetInstitutionsQueryHandler : IRequestHandler<GetInstitution
         var pageNumber = request.Pagination.PageNumber;
         var pageSize = request.Pagination.PageSize;
 
-        var items = await _repository.ListAsync(pageNumber, pageSize, cancellationToken);
+        var items = await _repository.ListAsync(pageNumber, pageSize, null, cancellationToken);
+        var totalCount = await _repository.CountAsync(null, cancellationToken);
         var dtos = items.Select(ToDto).ToArray();
 
-        // For now we only know the count of returned items; Infrastructure will extend to include real totals.
-        var totalCount = dtos.Length;
         return new PagedResult<InstitutionDto>(dtos, totalCount, pageNumber, pageSize);
     }
 

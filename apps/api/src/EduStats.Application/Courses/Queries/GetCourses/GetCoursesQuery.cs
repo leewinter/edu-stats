@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Linq.Expressions;
 using EduStats.Application.Common.Interfaces;
 using EduStats.Application.Common.Models;
 using EduStats.Application.Courses.Dtos;
@@ -21,16 +22,22 @@ public sealed class GetCoursesQueryHandler : IRequestHandler<GetCoursesQuery, Pa
 
     public async Task<PagedResult<CourseDto>> Handle(GetCoursesQuery request, CancellationToken cancellationToken)
     {
+        Expression<Func<Course, bool>>? predicate = null;
+        if (request.InstitutionId.HasValue)
+        {
+            var institutionId = request.InstitutionId.Value;
+            predicate = course => course.InstitutionId == institutionId;
+        }
+
         var items = await _repository.ListAsync(
             request.Pagination.PageNumber,
             request.Pagination.PageSize,
+            predicate,
             cancellationToken);
 
-        var filtered = request.InstitutionId.HasValue
-            ? items.Where(course => course.InstitutionId == request.InstitutionId.Value).ToArray()
-            : items.ToArray();
+        var totalCount = await _repository.CountAsync(predicate, cancellationToken);
 
-        var dtos = filtered
+        var dtos = items
             .Select(course => new CourseDto(
                 course.Id,
                 course.InstitutionId,
@@ -44,7 +51,7 @@ public sealed class GetCoursesQueryHandler : IRequestHandler<GetCoursesQuery, Pa
 
         return new PagedResult<CourseDto>(
             dtos,
-            dtos.Length,
+            totalCount,
             request.Pagination.PageNumber,
             request.Pagination.PageSize);
     }

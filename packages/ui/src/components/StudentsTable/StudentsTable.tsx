@@ -1,5 +1,5 @@
 import { Button, Popconfirm, Space, Table, Typography } from "antd";
-import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
+import type { ColumnsType, TablePaginationConfig, TableProps } from "antd/es/table";
 import { useMemo } from "react";
 
 export interface StudentTableRow {
@@ -23,6 +23,8 @@ export interface StudentsTableProps {
   pageSize?: number;
   pageSizeOptions?: number[];
   showSizeChanger?: boolean;
+  pagination?: TablePaginationConfig;
+  onChange?: TableProps<StudentTableRow>["onChange"];
 }
 
 export function StudentsTable({
@@ -33,7 +35,9 @@ export function StudentsTable({
   onManageEnrollments,
   pageSize = 10,
   pageSizeOptions = [10, 20, 50],
-  showSizeChanger = true
+  showSizeChanger = true,
+  pagination,
+  onChange
 }: StudentsTableProps) {
   const columns = useMemo<ColumnsType<StudentTableRow>>(() => {
     const baseColumns: ColumnsType<StudentTableRow> = [
@@ -123,7 +127,7 @@ export function StudentsTable({
     return baseColumns;
   }, [onDelete, onEdit, onManageEnrollments]);
 
-  const pagination: TablePaginationConfig = {
+  const defaultPagination: TablePaginationConfig = {
     pageSize,
     showSizeChanger,
     pageSizeOptions: pageSizeOptions.map((size) => size.toString()),
@@ -135,9 +139,9 @@ export function StudentsTable({
       rowKey="id"
       dataSource={students}
       columns={columns}
-      pagination={pagination}
+      pagination={pagination ?? defaultPagination}
+      onChange={onChange}
       loading={loading}
     />
   );
 }
-

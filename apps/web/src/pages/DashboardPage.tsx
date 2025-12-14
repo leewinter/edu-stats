@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Space, Alert, Button, Typography, Card } from "antd";
 import {
   StatisticsCard,
@@ -98,6 +98,9 @@ const DashboardPage = () => {
     return Array.from(grouped.values()).sort((a, b) => b.active - a.active);
   }, [courseStats]);
 
+  const [coursePageNumber, setCoursePageNumber] = useState(1);
+  const [coursePageSize, setCoursePageSize] = useState(10);
+
   return (
     <>
       <div className="app-content">
@@ -185,7 +188,26 @@ const DashboardPage = () => {
                     showIcon
                   />
                 )}
-                <CoursePerformanceTable data={courseRows} loading={statsLoading} />
+                <CoursePerformanceTable
+                  data={courseRows}
+                  loading={statsLoading}
+                  pagination={{
+                    current: coursePageNumber,
+                    pageSize: coursePageSize,
+                    total: courseRows.length,
+                    showSizeChanger: true,
+                    pageSizeOptions: ["10", "20", "50"]
+                  }}
+                  onChange={(pagination) => {
+                    if (pagination.current) {
+                      setCoursePageNumber(pagination.current);
+                    }
+                    if (pagination.pageSize && pagination.pageSize !== coursePageSize) {
+                      setCoursePageSize(pagination.pageSize);
+                      setCoursePageNumber(1);
+                    }
+                  }}
+                />
               </Space>
             </Card>
             {chartData.length > 0 && (

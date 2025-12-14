@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Linq.Expressions;
 using EduStats.Application.Common.Interfaces;
 using EduStats.Domain.Common;
 using EduStats.Infrastructure.Persistence;
@@ -59,7 +60,7 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class,
         return Task.CompletedTask;
     }
 
-    public async Task<IReadOnlyList<TEntity>> ListAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<TEntity>> ListAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? predicate = null, CancellationToken cancellationToken = default)
     {
         IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
@@ -80,9 +81,25 @@ public class EfRepository<TEntity> : IRepository<TEntity> where TEntity : class,
                 .Include(x => x.Course);
         }
 
+        if (predicate != null)
+        {
+            query = query.Where(predicate);
+        }
+
         return await query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
+    }
+
+    public Task<int> CountAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken cancellationToken = default)
+    {
+        IQueryable<TEntity> query = _dbSet.AsNoTracking();
+        if (predicate != null)
+        {
+            query = query.Where(predicate);
+        }
+
+        return query.CountAsync(cancellationToken);
     }
 }

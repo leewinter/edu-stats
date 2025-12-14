@@ -1,8 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchCourses } from "../api/courses";
+import { fetchCourses, type FetchCoursesParams } from "../api/courses";
 
-export const useCourses = (institutionId?: string) =>
+export const useCourses = (params?: FetchCoursesParams) =>
   useQuery({
-    queryKey: ["courses", institutionId],
-    queryFn: () => fetchCourses(institutionId)
+    queryKey: [
+      "courses",
+      params?.institutionId ?? null,
+      params?.pageNumber ?? 1,
+      params?.pageSize ?? 10
+    ],
+    queryFn: () => fetchCourses(params)
   });
