@@ -41,3 +41,9 @@ export type {
   StudentEnrollmentManagerProps,
   StudentEnrollmentRecord
 } from "./components/StudentEnrollmentManager";
+
+export { CoursePerformanceTable } from "./components/CoursePerformanceTable";
+export type {
+  CoursePerformanceTableProps,
+  CoursePerformanceRow
+} from "./components/CoursePerformanceTable";

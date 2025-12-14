@@ -1,13 +1,15 @@
 import { useCallback, useMemo, useState } from "react";
-import { Space, Alert, Button } from "antd";
+import { Space, Alert, Button, Typography, Card } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   InstitutionFormModal,
   type InstitutionFormValues,
   InstitutionsTable,
-  StatisticsCard
+  StatisticsCard,
+  CoursePerformanceTable
 } from "@edu-stats/ui";
 import { useInstitutions } from "../hooks/useInstitutions";
+import { useCourseStats } from "../hooks/useCourseStats";
 import {
   createInstitution,
   deleteInstitution,
@@ -24,6 +26,11 @@ type ModalState =
 const DashboardPage = () => {
   const [modalState, setModalState] = useState<ModalState | null>(null);
   const { data, isLoading, isError } = useInstitutions();
+  const {
+    data: courseStats,
+    isLoading: statsLoading,
+    isError: statsError
+  } = useCourseStats();
   const queryClient = useQueryClient();
 
   const createInstitutionMutation = useMutation({
@@ -95,6 +102,20 @@ const DashboardPage = () => {
     [data?.items]
   );
 
+  const courseRows = useMemo(
+    () =>
+      (courseStats ?? []).map((stat) => ({
+        courseId: stat.courseId,
+        institutionName: stat.institutionName,
+        title: stat.title,
+        code: stat.code,
+        activeEnrollments: stat.activeEnrollments,
+        completedEnrollments: stat.completedEnrollments,
+        droppedEnrollments: stat.droppedEnrollments
+      })),
+    [courseStats]
+  );
+
   return (
     <>
       <div className="app-content">
@@ -140,6 +161,22 @@ const DashboardPage = () => {
             onEdit={handleOpenEdit}
             onDelete={handleDelete}
           />
+          <Card>
+            <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+              <Typography.Title level={4} style={{ margin: 0 }}>
+                Course performance
+              </Typography.Title>
+              {statsError && (
+                <Alert
+                  type="error"
+                  message="Unable to load course performance"
+                  description="Ensure the API is reachable."
+                  showIcon
+                />
+              )}
+              <CoursePerformanceTable data={courseRows} loading={statsLoading} />
+            </Space>
+          </Card>
         </Space>
       </div>
       <InstitutionFormModal
