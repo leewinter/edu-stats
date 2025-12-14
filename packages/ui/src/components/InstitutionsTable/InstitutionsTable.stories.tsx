@@ -44,6 +44,48 @@ const sampleInstitutions: InstitutionTableRow[] = [
         postalCode: "WC2R 2LS"
       }
     ]
+  },
+  {
+    id: "manchester",
+    name: "University of Manchester",
+    enrollment: 40500,
+    addresses: [
+      {
+        line1: "Oxford Rd",
+        city: "Manchester",
+        county: "Greater Manchester",
+        country: "United Kingdom",
+        postalCode: "M13 9PL"
+      }
+    ]
+  },
+  {
+    id: "warwick",
+    name: "University of Warwick",
+    enrollment: 26500,
+    addresses: [
+      {
+        line1: "Gibbet Hill Rd",
+        city: "Coventry",
+        county: "Warwickshire",
+        country: "United Kingdom",
+        postalCode: "CV4 7AL"
+      }
+    ]
+  },
+  {
+    id: "bristol",
+    name: "University of Bristol",
+    enrollment: 23500,
+    addresses: [
+      {
+        line1: "Senate House",
+        city: "Bristol",
+        county: "Bristol",
+        country: "United Kingdom",
+        postalCode: "BS8 1TH"
+      }
+    ]
   }
 ];
 
@@ -53,7 +95,8 @@ const meta: Meta<typeof InstitutionsTable> = {
   args: {
     institutions: sampleInstitutions,
     onEdit: fn(),
-    onDelete: fn()
+    onDelete: fn(),
+    pageSize: 4
   },
   parameters: {
     layout: "fullscreen"

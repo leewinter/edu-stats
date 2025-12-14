@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Button, Popconfirm, Space, Table, Typography } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 
 export interface InstitutionAddressRow {
   line1: string;
@@ -23,13 +23,19 @@ export interface InstitutionsTableProps {
   loading?: boolean;
   onEdit?: (institution: InstitutionTableRow) => void;
   onDelete?: (institution: InstitutionTableRow) => void;
+  pageSize?: number;
+  pageSizeOptions?: number[];
+  showSizeChanger?: boolean;
 }
 
 export function InstitutionsTable({
   institutions,
   loading,
   onEdit,
-  onDelete
+  onDelete,
+  pageSize = 10,
+  pageSizeOptions = [10, 20, 50],
+  showSizeChanger = true
 }: InstitutionsTableProps) {
   const columns = useMemo<ColumnsType<InstitutionTableRow>>(() => {
     const baseColumns: ColumnsType<InstitutionTableRow> = [
@@ -37,6 +43,8 @@ export function InstitutionsTable({
         title: "Institution",
         dataIndex: "name",
         key: "name",
+        sorter: (a, b) => a.name.localeCompare(b.name),
+        defaultSortOrder: "ascend",
         render: (text, record) => {
           const primaryAddress = record.addresses?.[0];
           return (
@@ -61,6 +69,7 @@ export function InstitutionsTable({
         dataIndex: "enrollment",
         key: "enrollment",
         align: "right",
+        sorter: (a, b) => a.enrollment - b.enrollment,
         render: (value: number) => value.toLocaleString()
       }
     ];
@@ -98,12 +107,19 @@ export function InstitutionsTable({
     return baseColumns;
   }, [onDelete, onEdit]);
 
+  const pagination: TablePaginationConfig = {
+    pageSize,
+    showSizeChanger,
+    pageSizeOptions: pageSizeOptions.map((size) => size.toString()),
+    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`
+  };
+
   return (
     <Table
       rowKey="id"
       dataSource={institutions}
       columns={columns}
-      pagination={false}
+      pagination={pagination}
       loading={loading}
     />
   );

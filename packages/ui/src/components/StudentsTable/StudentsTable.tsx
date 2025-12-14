@@ -1,5 +1,5 @@
 import { Button, Popconfirm, Space, Table, Typography } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { useMemo } from "react";
 
 export interface StudentTableRow {
@@ -20,6 +20,9 @@ export interface StudentsTableProps {
   onEdit?: (student: StudentTableRow) => void;
   onDelete?: (student: StudentTableRow) => void;
   onManageEnrollments?: (student: StudentTableRow) => void;
+  pageSize?: number;
+  pageSizeOptions?: number[];
+  showSizeChanger?: boolean;
 }
 
 export function StudentsTable({
@@ -27,7 +30,10 @@ export function StudentsTable({
   loading,
   onEdit,
   onDelete,
-  onManageEnrollments
+  onManageEnrollments,
+  pageSize = 10,
+  pageSizeOptions = [10, 20, 50],
+  showSizeChanger = true
 }: StudentsTableProps) {
   const columns = useMemo<ColumnsType<StudentTableRow>>(() => {
     const baseColumns: ColumnsType<StudentTableRow> = [
@@ -35,6 +41,9 @@ export function StudentsTable({
         title: "Student",
         dataIndex: "firstName",
         key: "student",
+        sorter: (a, b) =>
+          `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
+        defaultSortOrder: "ascend",
         render: (_, record) => (
           <div>
             <Typography.Text strong>
@@ -49,26 +58,30 @@ export function StudentsTable({
       {
         title: "Institution",
         dataIndex: "institutionName",
-        key: "institutionName"
+        key: "institutionName",
+        sorter: (a, b) => a.institutionName.localeCompare(b.institutionName)
       },
       {
         title: "Enrollment year",
         dataIndex: "enrollmentYear",
         key: "enrollmentYear",
-        align: "right"
+        align: "right",
+        sorter: (a, b) => a.enrollmentYear - b.enrollmentYear
       },
       {
         title: "Active courses",
         dataIndex: "activeEnrollmentCount",
         key: "activeEnrollmentCount",
         align: "right",
+        sorter: (a, b) => (a.activeEnrollmentCount ?? 0) - (b.activeEnrollmentCount ?? 0),
         render: (value?: number) => value ?? 0
       },
       {
         title: "Focus",
         dataIndex: "courseFocus",
         key: "courseFocus",
-        render: (value?: string | null) => value ?? "—"
+        sorter: (a, b) => (a.courseFocus ?? "").localeCompare(b.courseFocus ?? ""),
+        render: (value?: string | null) => value ?? "-"
       }
     ];
 
@@ -110,13 +123,21 @@ export function StudentsTable({
     return baseColumns;
   }, [onDelete, onEdit, onManageEnrollments]);
 
+  const pagination: TablePaginationConfig = {
+    pageSize,
+    showSizeChanger,
+    pageSizeOptions: pageSizeOptions.map((size) => size.toString()),
+    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`
+  };
+
   return (
     <Table
       rowKey="id"
       dataSource={students}
       columns={columns}
-      pagination={false}
+      pagination={pagination}
       loading={loading}
     />
   );
 }
+
