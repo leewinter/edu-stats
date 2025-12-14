@@ -12,12 +12,18 @@ const AppLayout = () => {
     ? "courses"
     : location.pathname.startsWith("/students")
       ? "students"
-      : "dashboard";
+      : location.pathname.startsWith("/institutions")
+        ? "institutions"
+        : "dashboard";
 
   const menuItems: MenuProps["items"] = [
     {
       key: "dashboard",
       label: "Dashboard"
+    },
+    {
+      key: "institutions",
+      label: "Institutions"
     },
     {
       key: "courses",
