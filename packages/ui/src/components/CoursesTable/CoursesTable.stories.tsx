@@ -36,7 +36,7 @@ const sampleCourses: CourseTableRow[] = [
 ];
 
 const meta: Meta<typeof CoursesTable> = {
-  title: "Dashboard/CoursesTable",
+  title: "Courses/CoursesTable",
   component: CoursesTable,
   args: {
     courses: sampleCourses,

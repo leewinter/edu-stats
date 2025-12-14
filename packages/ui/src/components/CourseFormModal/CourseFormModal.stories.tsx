@@ -19,7 +19,7 @@ const baseArgs = {
 };
 
 const meta: Meta<typeof CourseFormModal> = {
-  title: "Dashboard/CourseFormModal",
+  title: "Forms/CourseFormModal",
   component: CourseFormModal,
   args: baseArgs
 };

@@ -28,7 +28,7 @@ const sampleStudents: StudentTableRow[] = [
 ];
 
 const meta: Meta<typeof StudentsTable> = {
-  title: "Dashboard/StudentsTable",
+  title: "Students/StudentsTable",
   component: StudentsTable,
   args: {
     students: sampleStudents,
