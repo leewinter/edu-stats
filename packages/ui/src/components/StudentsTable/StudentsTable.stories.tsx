@@ -2,30 +2,17 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 import { StudentsTable, type StudentTableRow } from "./StudentsTable";
 
-const sampleStudents: StudentTableRow[] = [
-  {
-    id: "1",
-    institutionId: "oxford",
-    institutionName: "University of Oxford",
-    firstName: "Amelia",
-    lastName: "Hughes",
-  email: "amelia.hughes@oxford.ac.uk",
-  enrollmentYear: 2023,
-  courseFocus: "Computer Science",
-  activeEnrollmentCount: 2
-},
-{
-  id: "2",
-    institutionId: "cambridge",
-    institutionName: "University of Cambridge",
-    firstName: "Noah",
-    lastName: "Patel",
-  email: "noah.patel@cam.ac.uk",
-  enrollmentYear: 2022,
-  courseFocus: "Engineering",
-  activeEnrollmentCount: 1
-}
-];
+const sampleStudents: StudentTableRow[] = Array.from({ length: 14 }).map((_, index) => ({
+  id: `${index + 1}`,
+  institutionId: index % 2 === 0 ? "oxford" : "cambridge",
+  institutionName: index % 2 === 0 ? "University of Oxford" : "University of Cambridge",
+  firstName: ["Amelia", "Noah", "Sophie", "Ethan", "Maya", "Leo"][index % 6],
+  lastName: ["Hughes", "Patel", "Davies", "Wong", "O'Connor", "Nguyen"][index % 6],
+  email: `student${index + 1}@example.edu`,
+  enrollmentYear: 2020 + (index % 5),
+  courseFocus: ["Computer Science", "Engineering", "Economics", "Medicine"][index % 4],
+  activeEnrollmentCount: (index % 3) + 1
+}));
 
 const meta: Meta<typeof StudentsTable> = {
   title: "Students/StudentsTable",
@@ -34,7 +21,8 @@ const meta: Meta<typeof StudentsTable> = {
     students: sampleStudents,
     onEdit: fn(),
     onDelete: fn(),
-    onManageEnrollments: fn()
+    onManageEnrollments: fn(),
+    pageSize: 5
   },
   parameters: {
     layout: "fullscreen"

@@ -2,38 +2,16 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 import { CoursesTable, type CourseTableRow } from "./CoursesTable";
 
-const sampleCourses: CourseTableRow[] = [
-  {
-    id: "cs101",
-    institutionId: "inst-1",
-    institutionName: "University of Edinburgh",
-  title: "Computer Science BSc",
-  code: "CS101",
-  level: "Undergraduate",
-  credits: 120,
-  capacity: 60
-},
-  {
-    id: "ds501",
-    institutionId: "inst-1",
-    institutionName: "University of Edinburgh",
-  title: "Data Science MSc",
-  code: "DS501",
-  level: "Postgraduate",
-  credits: 90,
-  capacity: 40
-},
-  {
-    id: "eng401",
-    institutionId: "inst-2",
-    institutionName: "University of Oxford",
-  title: "Engineering MEng",
-  code: "ENG401",
-  level: "Undergraduate",
-  credits: 140,
-  capacity: 80
-}
-];
+const sampleCourses: CourseTableRow[] = Array.from({ length: 12 }).map((_, index) => ({
+  id: `course-${index + 1}`,
+  institutionId: index % 2 === 0 ? "inst-1" : "inst-2",
+  institutionName: index % 2 === 0 ? "University of Edinburgh" : "University of Oxford",
+  title: `Program ${index + 1}`,
+  code: `C${100 + index}`,
+  level: index % 2 === 0 ? "Undergraduate" : "Postgraduate",
+  credits: 90 + index * 5,
+  capacity: 40 + index * 2
+}));
 
 const meta: Meta<typeof CoursesTable> = {
   title: "Courses/CoursesTable",
@@ -41,7 +19,8 @@ const meta: Meta<typeof CoursesTable> = {
   args: {
     courses: sampleCourses,
     onEdit: fn(),
-    onDelete: fn()
+    onDelete: fn(),
+    pageSize: 5
   },
   parameters: {
     layout: "fullscreen"

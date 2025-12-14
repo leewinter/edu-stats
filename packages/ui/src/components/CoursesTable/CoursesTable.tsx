@@ -1,5 +1,5 @@
 import { Button, Popconfirm, Space, Table, Typography } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { useMemo } from "react";
 
 export interface CourseTableRow {
@@ -18,20 +18,33 @@ export interface CoursesTableProps {
   loading?: boolean;
   onEdit?: (course: CourseTableRow) => void;
   onDelete?: (course: CourseTableRow) => void;
+  pageSize?: number;
+  pageSizeOptions?: number[];
+  showSizeChanger?: boolean;
 }
 
-export function CoursesTable({ courses, loading, onEdit, onDelete }: CoursesTableProps) {
+export function CoursesTable({
+  courses,
+  loading,
+  onEdit,
+  onDelete,
+  pageSize = 10,
+  pageSizeOptions = [10, 20, 50],
+  showSizeChanger = true
+}: CoursesTableProps) {
   const columns = useMemo<ColumnsType<CourseTableRow>>(() => {
     const baseColumns: ColumnsType<CourseTableRow> = [
       {
         title: "Course",
         dataIndex: "title",
         key: "title",
+        sorter: (a, b) => a.title.localeCompare(b.title),
+        defaultSortOrder: "ascend",
         render: (text, record) => (
           <div>
             <Typography.Text strong>{text}</Typography.Text>
             <Typography.Paragraph type="secondary" style={{ marginBottom: 0 }}>
-              {record.code} · {record.level}
+              {record.code} - {record.level}
             </Typography.Paragraph>
           </div>
         )
@@ -40,19 +53,22 @@ export function CoursesTable({ courses, loading, onEdit, onDelete }: CoursesTabl
         title: "Credits",
         dataIndex: "credits",
         key: "credits",
-        align: "right"
+        align: "right",
+        sorter: (a, b) => a.credits - b.credits
       },
       {
         title: "Capacity",
         dataIndex: "capacity",
         key: "capacity",
         align: "right",
-        render: (value?: number | null) => (value ? value.toString() : "—")
+        sorter: (a, b) => (a.capacity ?? 0) - (b.capacity ?? 0),
+        render: (value?: number | null) => (value ? value.toString() : "-")
       },
       {
         title: "Institution",
         dataIndex: "institutionName",
-        key: "institutionName"
+        key: "institutionName",
+        sorter: (a, b) => (a.institutionName ?? "").localeCompare(b.institutionName ?? "")
       }
     ];
 
@@ -89,13 +105,21 @@ export function CoursesTable({ courses, loading, onEdit, onDelete }: CoursesTabl
     return baseColumns;
   }, [onDelete, onEdit]);
 
+  const pagination: TablePaginationConfig = {
+    pageSize,
+    showSizeChanger,
+    pageSizeOptions: pageSizeOptions.map((size) => size.toString()),
+    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`
+  };
+
   return (
     <Table
       rowKey="id"
       dataSource={courses}
       columns={columns}
-      pagination={false}
+      pagination={pagination}
       loading={loading}
     />
   );
 }
+

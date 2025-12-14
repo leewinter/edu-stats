@@ -5,28 +5,17 @@ const meta: Meta<typeof CoursePerformanceTable> = {
   title: "Dashboard/CoursePerformanceTable",
   component: CoursePerformanceTable,
   args: {
-    data: [
-      {
-        courseId: "1",
-        institutionName: "University of Oxford",
-    title: "Computer Science BSc",
-    code: "CS101",
-    activeEnrollments: 42,
-    completedEnrollments: 12,
-    droppedEnrollments: 3,
-    capacity: 40
-  },
-  {
-        courseId: "2",
-        institutionName: "University of Cambridge",
-    title: "Engineering MEng",
-    code: "ENG401",
-    activeEnrollments: 30,
-    completedEnrollments: 8,
-    droppedEnrollments: 2,
-    capacity: 35
-  }
-    ]
+    pageSize: 5,
+    data: Array.from({ length: 12 }).map((_, index) => ({
+      courseId: `${index + 1}`,
+      institutionName: index % 2 === 0 ? "University of Oxford" : "University of Cambridge",
+      title: `Program ${index + 1}`,
+      code: `C${100 + index}`,
+      activeEnrollments: 20 + index,
+      completedEnrollments: 5 + index,
+      droppedEnrollments: index % 3,
+      capacity: 30 + index
+    }))
   }
 };
 
