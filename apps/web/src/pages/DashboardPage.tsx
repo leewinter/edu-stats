@@ -1,10 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { Space, Alert, Button, Typography, Card } from "antd";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  InstitutionFormModal,
-  type InstitutionFormValues,
-  InstitutionsTable,
   StatisticsCard,
   CoursePerformanceTable,
   EnrollmentStatusChart,
@@ -12,91 +8,17 @@ import {
 } from "@edu-stats/ui";
 import { useInstitutions } from "../hooks/useInstitutions";
 import { useCourseStats } from "../hooks/useCourseStats";
-import {
-  createInstitution,
-  deleteInstitution,
-  updateInstitution,
-  type Institution,
-  type InstitutionInput
-} from "../api/institutions";
+import { useNavigate } from "react-router-dom";
 import "../App.css";
 
-type ModalState =
-  | { mode: "create" }
-  | { mode: "edit"; institution: Institution };
-
 const DashboardPage = () => {
-  const [modalState, setModalState] = useState<ModalState | null>(null);
   const { data, isLoading, isError } = useInstitutions();
   const {
     data: courseStats,
     isLoading: statsLoading,
     isError: statsError
   } = useCourseStats();
-  const queryClient = useQueryClient();
-
-  const createInstitutionMutation = useMutation({
-    mutationFn: createInstitution,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["institutions"] });
-      handleCloseModal();
-    }
-  });
-
-  const updateInstitutionMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: InstitutionInput }) =>
-      updateInstitution(id, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["institutions"] });
-      handleCloseModal();
-    }
-  });
-
-  const deleteInstitutionMutation = useMutation({
-    mutationFn: deleteInstitution,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["institutions"] });
-    }
-  });
-
-  const handleOpenCreate = useCallback(() => {
-    setModalState({ mode: "create" });
-  }, []);
-
-  const handleOpenEdit = useCallback((institution: Institution) => {
-    setModalState({ mode: "edit", institution });
-  }, []);
-
-  const handleDelete = useCallback(
-    async (institution: Institution) => {
-      await deleteInstitutionMutation.mutateAsync(institution.id);
-    },
-    [deleteInstitutionMutation]
-  );
-
-  function handleCloseModal() {
-    setModalState(null);
-  }
-
-  const handleSubmit = async (values: InstitutionFormValues) => {
-    const payload = mapFormValuesToInput(values);
-
-    if (modalState?.mode === "edit" && modalState.institution) {
-      await updateInstitutionMutation.mutateAsync({
-        id: modalState.institution.id,
-        payload
-      });
-    } else {
-      await createInstitutionMutation.mutateAsync(payload);
-    }
-  };
-
-  const isSubmitting =
-    createInstitutionMutation.isLoading || updateInstitutionMutation.isLoading;
-  const mutationError =
-    (createInstitutionMutation.error as Error | null) ??
-    (updateInstitutionMutation.error as Error | null);
-  const mutationErrorMessage = mutationError?.message;
+  const navigate = useNavigate();
 
   const formatNumber = useCallback(
     (value: number) => value.toLocaleString("en-GB"),
@@ -203,8 +125,8 @@ const DashboardPage = () => {
                 trendLabel="Latest query snapshot"
               />
             </div>
-            <Button type="primary" onClick={handleOpenCreate}>
-              Add institution
+            <Button type="primary" onClick={() => navigate("/institutions")}>
+              Manage institutions
             </Button>
           </Space>
           <div
@@ -246,12 +168,9 @@ const DashboardPage = () => {
               showIcon
             />
           )}
-          <InstitutionsTable
-            institutions={data?.items ?? []}
-            loading={isLoading}
-            onEdit={handleOpenEdit}
-            onDelete={handleDelete}
-          />
+          {isLoading && (
+            <Typography.Text type="secondary">Loading latest institution snapshot…</Typography.Text>
+          )}
           <Space direction="vertical" size="large" style={{ width: "100%" }}>
             <Card>
               <Space direction="vertical" size="middle" style={{ width: "100%" }}>
@@ -280,83 +199,8 @@ const DashboardPage = () => {
           </Space>
         </Space>
       </div>
-      <InstitutionFormModal
-        open={modalState !== null}
-        mode={modalState?.mode ?? "create"}
-        loading={isSubmitting}
-        errorMessage={mutationErrorMessage}
-        initialValues={
-          modalState?.mode === "edit" && modalState.institution
-            ? mapInstitutionToFormValues(modalState.institution)
-            : undefined
-        }
-        onCancel={handleCloseModal}
-        onSubmit={handleSubmit}
-      />
     </>
   );
 };
 
 export default DashboardPage;
-
-function mapFormValuesToInput(values: InstitutionFormValues): InstitutionInput {
-  const sanitizedAddresses = (values.addresses ?? [])
-    .map((address) => ({
-      line1: address.line1.trim(),
-      line2: address.line2?.trim() || undefined,
-      city: address.city.trim(),
-      county: address.county.trim(),
-      country: address.country.trim(),
-      postalCode: address.postalCode.trim()
-    }))
-    .filter(
-      (address) =>
-        address.line1 && address.city && address.county && address.country && address.postalCode
-    );
-
-  if (sanitizedAddresses.length === 0) {
-    sanitizedAddresses.push({
-      line1: values.name,
-      line2: undefined,
-      city: "",
-      county: "",
-      country: "",
-      postalCode: ""
-    });
-  }
-
-  return {
-    name: values.name,
-    enrollment: values.enrollment,
-    addresses: sanitizedAddresses
-  };
-}
-
-function mapInstitutionToFormValues(institution: Institution): InstitutionFormValues {
-  const addresses =
-    institution.addresses.length > 0
-      ? institution.addresses
-      : [
-          {
-            line1: "",
-            line2: "",
-            city: "",
-            county: "",
-            country: "",
-            postalCode: ""
-          }
-        ];
-
-  return {
-    name: institution.name,
-    enrollment: institution.enrollment,
-    addresses: addresses.map((address) => ({
-      line1: address.line1,
-      line2: address.line2 ?? "",
-      city: address.city,
-      county: address.county,
-      country: address.country ?? "",
-      postalCode: address.postalCode
-    }))
-  };
-}
