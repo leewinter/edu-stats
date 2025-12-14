@@ -34,9 +34,15 @@ type StudentModalState =
 const StudentsPage = () => {
   const [modalState, setModalState] = useState<StudentModalState | null>(null);
   const [enrollmentStudent, setEnrollmentStudent] = useState<Student | null>(null);
-  const { data, isLoading, isError } = useStudents();
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const { data, isLoading, isError } = useStudents({ pageNumber, pageSize });
   const { data: institutionData } = useInstitutions();
-  const { data: coursesData } = useCourses(enrollmentStudent?.institutionId);
+  const { data: coursesData } = useCourses(
+    enrollmentStudent
+      ? { institutionId: enrollmentStudent.institutionId, pageNumber: 1, pageSize: 100 }
+      : undefined
+  );
   const {
     data: enrollmentData,
     isLoading: enrollmentsLoading
@@ -219,6 +225,22 @@ const StudentsPage = () => {
             onEdit={handleOpenEdit}
             onDelete={handleDelete}
             onManageEnrollments={handleOpenEnrollments}
+            pagination={{
+              current: pageNumber,
+              pageSize,
+              total: data?.totalCount ?? 0,
+              showSizeChanger: true,
+              pageSizeOptions: ["10", "20", "50"]
+            }}
+            onChange={(pagination) => {
+              if (pagination.current) {
+                setPageNumber(pagination.current);
+              }
+              if (pagination.pageSize && pagination.pageSize !== pageSize) {
+                setPageSize(pagination.pageSize);
+                setPageNumber(1);
+              }
+            }}
           />
         </Space>
       </div>

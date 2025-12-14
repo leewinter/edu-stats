@@ -28,9 +28,19 @@ export interface PagedCourseResult {
   pageSize: number;
 }
 
-export const fetchCourses = async (institutionId?: string) => {
+export interface FetchCoursesParams {
+  pageNumber?: number;
+  pageSize?: number;
+  institutionId?: string;
+}
+
+export const fetchCourses = async ({
+  pageNumber = 1,
+  pageSize = 10,
+  institutionId
+}: FetchCoursesParams = {}) => {
   const response = await apiClient.get<PagedCourseResult>("/api/courses", {
-    params: { pageNumber: 1, pageSize: 10, institutionId }
+    params: { pageNumber, pageSize, institutionId }
   });
   return response.data;
 };

@@ -24,7 +24,9 @@ type CourseModalState =
 
 const CoursesPage = () => {
   const [modalState, setModalState] = useState<CourseModalState | null>(null);
-  const { data, isLoading, isError } = useCourses();
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const { data, isLoading, isError } = useCourses({ pageNumber, pageSize });
   const { data: institutionData } = useInstitutions();
   const queryClient = useQueryClient();
 
@@ -137,6 +139,22 @@ const CoursesPage = () => {
             loading={isLoading}
             onEdit={handleOpenEdit}
             onDelete={handleDelete}
+            pagination={{
+              current: pageNumber,
+              pageSize,
+              total: data?.totalCount ?? 0,
+              showSizeChanger: true,
+              pageSizeOptions: ["10", "20", "50"]
+            }}
+            onChange={(pagination) => {
+              if (pagination.current) {
+                setPageNumber(pagination.current);
+              }
+              if (pagination.pageSize && pagination.pageSize !== pageSize) {
+                setPageSize(pagination.pageSize);
+                setPageNumber(1);
+              }
+            }}
           />
         </Space>
       </div>

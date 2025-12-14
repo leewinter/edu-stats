@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Linq.Expressions;
 using EduStats.Application.Common.Interfaces;
 using EduStats.Application.Common.Models;
 using EduStats.Application.Students.Dtos;
@@ -21,12 +22,22 @@ public sealed class GetStudentsQueryHandler : IRequestHandler<GetStudentsQuery, 
 
     public async Task<PagedResult<StudentDto>> Handle(GetStudentsQuery request, CancellationToken cancellationToken)
     {
-        var items = await _repository.ListAsync(request.Pagination.PageNumber, request.Pagination.PageSize, cancellationToken);
-
+        Expression<Func<Student, bool>>? predicate = null;
         if (request.InstitutionId.HasValue)
         {
-            items = items.Where(s => s.InstitutionId == request.InstitutionId.Value).ToList();
+            var institutionId = request.InstitutionId.Value;
+            predicate = student => student.InstitutionId == institutionId;
         }
+
+        var items = await _repository.ListAsync(
+            request.Pagination.PageNumber,
+            request.Pagination.PageSize,
+            predicate,
+            cancellationToken);
+
+        var totalCount = await _repository.CountAsync(
+            predicate,
+            cancellationToken);
 
         var dtos = items
             .Select(student => new StudentDto(
@@ -41,6 +52,6 @@ public sealed class GetStudentsQueryHandler : IRequestHandler<GetStudentsQuery, 
                 student.ActiveEnrollmentCount))
             .ToArray();
 
-        return new PagedResult<StudentDto>(dtos, dtos.Length, request.Pagination.PageNumber, request.Pagination.PageSize);
+        return new PagedResult<StudentDto>(dtos, totalCount, request.Pagination.PageNumber, request.Pagination.PageSize);
     }
 }

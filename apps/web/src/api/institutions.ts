@@ -31,9 +31,17 @@ export interface PagedResult<T> {
   pageSize: number;
 }
 
-export const fetchInstitutions = async () => {
+export interface FetchInstitutionsParams {
+  pageNumber?: number;
+  pageSize?: number;
+}
+
+export const fetchInstitutions = async ({
+  pageNumber = 1,
+  pageSize = 10
+}: FetchInstitutionsParams = {}) => {
   const response = await apiClient.get<PagedResult<Institution>>("/api/institutions", {
-    params: { pageNumber: 1, pageSize: 10 }
+    params: { pageNumber, pageSize }
   });
   return response.data;
 };

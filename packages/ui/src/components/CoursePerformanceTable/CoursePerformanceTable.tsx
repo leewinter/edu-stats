@@ -1,5 +1,5 @@
 import { Space, Table, Tag, Typography } from "antd";
-import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
+import type { ColumnsType, TablePaginationConfig, TableProps } from "antd/es/table";
 
 export interface CoursePerformanceRow {
   courseId: string;
@@ -18,6 +18,8 @@ export interface CoursePerformanceTableProps {
   pageSize?: number;
   pageSizeOptions?: number[];
   showSizeChanger?: boolean;
+  pagination?: TablePaginationConfig;
+  onChange?: TableProps<CoursePerformanceRow>["onChange"];
 }
 
 export const CoursePerformanceTable = ({
@@ -25,7 +27,9 @@ export const CoursePerformanceTable = ({
   loading,
   pageSize = 10,
   pageSizeOptions = [10, 20, 50],
-  showSizeChanger = true
+  showSizeChanger = true,
+  pagination,
+  onChange
 }: CoursePerformanceTableProps) => {
   const columns: ColumnsType<CoursePerformanceRow> = [
     {
@@ -87,7 +91,7 @@ export const CoursePerformanceTable = ({
     }
   ];
 
-  const pagination: TablePaginationConfig = {
+  const defaultPagination: TablePaginationConfig = {
     pageSize,
     showSizeChanger,
     pageSizeOptions: pageSizeOptions.map((size) => size.toString()),
@@ -100,8 +104,8 @@ export const CoursePerformanceTable = ({
       columns={columns}
       dataSource={data}
       loading={loading}
-      pagination={pagination}
+      pagination={pagination ?? defaultPagination}
+      onChange={onChange}
     />
   );
 };
-

@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchInstitutions } from "../api/institutions";
+import { fetchInstitutions, type FetchInstitutionsParams } from "../api/institutions";
 
-export const useInstitutions = () =>
+export const useInstitutions = (params?: FetchInstitutionsParams) =>
   useQuery({
-    queryKey: ["institutions"],
-    queryFn: fetchInstitutions
+    queryKey: ["institutions", params?.pageNumber ?? 1, params?.pageSize ?? 10],
+    queryFn: () => fetchInstitutions(params)
   });

@@ -18,7 +18,9 @@ type ModalState =
 
 const InstitutionsPage = () => {
   const [modalState, setModalState] = useState<ModalState | null>(null);
-  const { data, isLoading, isError } = useInstitutions();
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const { data, isLoading, isError } = useInstitutions({ pageNumber, pageSize });
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
@@ -119,6 +121,22 @@ const InstitutionsPage = () => {
             loading={isLoading}
             onEdit={handleOpenEdit}
             onDelete={handleDelete}
+            pagination={{
+              current: pageNumber,
+              pageSize,
+              total: data?.totalCount ?? 0,
+              showSizeChanger: true,
+              pageSizeOptions: ["10", "20", "50"]
+            }}
+            onChange={(pagination) => {
+              if (pagination.current) {
+                setPageNumber(pagination.current);
+              }
+              if (pagination.pageSize && pagination.pageSize !== pageSize) {
+                setPageSize(pagination.pageSize);
+                setPageNumber(1);
+              }
+            }}
           />
         </Space>
       </div>
