@@ -16,6 +16,7 @@ public sealed class CreateCourseCommandValidatorTests
             "CS101",
             "Undergraduate",
             120,
+            null,
             null);
 
         var result = _validator.Validate(command);
@@ -32,7 +33,8 @@ public sealed class CreateCourseCommandValidatorTests
             "CS101",
             "Undergraduate",
             120,
-            "Intro to computing");
+            "Intro to computing",
+            40);
 
         var result = _validator.Validate(command);
 

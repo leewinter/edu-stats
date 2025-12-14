@@ -9,6 +9,7 @@ export interface CourseStats {
   activeEnrollments: number;
   completedEnrollments: number;
   droppedEnrollments: number;
+  capacity?: number | null;
 }
 
 export const fetchCourseStats = async (institutionId?: string) => {

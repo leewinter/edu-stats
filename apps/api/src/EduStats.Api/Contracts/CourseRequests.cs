@@ -6,14 +6,16 @@ public sealed record CreateCourseRequest(
     string Code,
     string Level,
     int Credits,
-    string? Description);
+    string? Description,
+    int? Capacity);
 
 public sealed record UpdateCourseRequest(
     string Title,
     string Code,
     string Level,
     int Credits,
-    string? Description);
+    string? Description,
+    int? Capacity);
 
 public sealed record CourseStatsResponse(
     Guid CourseId,
@@ -23,4 +25,5 @@ public sealed record CourseStatsResponse(
     string Code,
     int ActiveEnrollments,
     int CompletedEnrollments,
-    int DroppedEnrollments);
+    int DroppedEnrollments,
+    int? Capacity);

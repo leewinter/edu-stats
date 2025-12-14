@@ -111,7 +111,8 @@ const DashboardPage = () => {
         code: stat.code,
         activeEnrollments: stat.activeEnrollments,
         completedEnrollments: stat.completedEnrollments,
-        droppedEnrollments: stat.droppedEnrollments
+        droppedEnrollments: stat.droppedEnrollments,
+        capacity: stat.capacity ?? null
       })),
     [courseStats]
   );

@@ -170,7 +170,8 @@ function mapCourseFormToInput(values: CourseFormValues): CourseInput {
     code: values.code.trim(),
     level: values.level.trim(),
     credits: values.credits,
-    description: values.description?.trim() || undefined
+    description: values.description?.trim() || undefined,
+    capacity: values.capacity ?? undefined
   };
 }
 
@@ -181,6 +182,7 @@ function mapCourseToFormValues(course: Course): CourseFormValues {
     code: course.code,
     level: course.level,
     credits: course.credits,
-    description: course.description ?? ""
+    description: course.description ?? "",
+    capacity: course.capacity ?? undefined
   };
 }

@@ -31,7 +31,8 @@ public sealed class CourseStatisticsProvider : ICourseStatisticsProvider
                 Completed = _context.CourseEnrollments.Count(e =>
                     e.CourseId == course.Id && e.Status == Domain.Enrollments.CourseEnrollmentStatus.Completed),
                 Dropped = _context.CourseEnrollments.Count(e =>
-                    e.CourseId == course.Id && e.Status == Domain.Enrollments.CourseEnrollmentStatus.Dropped)
+                    e.CourseId == course.Id && e.Status == Domain.Enrollments.CourseEnrollmentStatus.Dropped),
+                course.Capacity
             });
 
         if (institutionId.HasValue)
@@ -45,7 +46,7 @@ public sealed class CourseStatisticsProvider : ICourseStatisticsProvider
             .ToListAsync(cancellationToken);
 
         return results
-            .Select(c => new CourseStatsDto(c.Id, c.InstitutionId, c.InstitutionName, c.Title, c.Code, c.Active, c.Completed, c.Dropped))
+            .Select(c => new CourseStatsDto(c.Id, c.InstitutionId, c.InstitutionName, c.Title, c.Code, c.Active, c.Completed, c.Dropped, c.Capacity))
             .ToList();
     }
 }

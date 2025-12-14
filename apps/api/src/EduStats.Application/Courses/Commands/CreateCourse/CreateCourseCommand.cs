@@ -11,7 +11,8 @@ public sealed record CreateCourseCommand(
     string Code,
     string Level,
     int Credits,
-    string? Description) : IRequest<Guid>;
+    string? Description,
+    int? Capacity) : IRequest<Guid>;
 
 public sealed class CreateCourseCommandHandler : IRequestHandler<CreateCourseCommand, Guid>
 {
@@ -40,7 +41,8 @@ public sealed class CreateCourseCommandHandler : IRequestHandler<CreateCourseCom
             request.Code,
             request.Level,
             request.Credits,
-            request.Description);
+            request.Description,
+            request.Capacity);
 
         await _courseRepository.AddAsync(course, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

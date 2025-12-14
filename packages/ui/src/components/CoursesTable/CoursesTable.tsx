@@ -10,6 +10,7 @@ export interface CourseTableRow {
   code: string;
   level: string;
   credits: number;
+  capacity?: number | null;
 }
 
 export interface CoursesTableProps {
@@ -40,6 +41,13 @@ export function CoursesTable({ courses, loading, onEdit, onDelete }: CoursesTabl
         dataIndex: "credits",
         key: "credits",
         align: "right"
+      },
+      {
+        title: "Capacity",
+        dataIndex: "capacity",
+        key: "capacity",
+        align: "right",
+        render: (value?: number | null) => (value ? value.toString() : "—")
       },
       {
         title: "Institution",

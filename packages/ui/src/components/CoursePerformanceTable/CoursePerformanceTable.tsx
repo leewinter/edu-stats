@@ -1,4 +1,4 @@
-import { Table, Typography } from "antd";
+import { Space, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
 export interface CoursePerformanceRow {
@@ -9,6 +9,7 @@ export interface CoursePerformanceRow {
   activeEnrollments: number;
   completedEnrollments: number;
   droppedEnrollments: number;
+  capacity?: number | null;
 }
 
 export interface CoursePerformanceTableProps {
@@ -48,6 +49,26 @@ export const CoursePerformanceTable = ({ data, loading }: CoursePerformanceTable
       dataIndex: "droppedEnrollments",
       key: "droppedEnrollments",
       align: "right"
+    },
+    {
+      title: "Capacity",
+      dataIndex: "capacity",
+      key: "capacity",
+      align: "right",
+      render: (value: number | null | undefined, record) => {
+        if (!value) {
+          return "—";
+        }
+
+        const overSubscribed = record.activeEnrollments > value;
+
+        return (
+          <Space size={4}>
+            {record.activeEnrollments}/{value}
+            {overSubscribed && <Tag color="red">Over</Tag>}
+          </Space>
+        );
+      }
     }
   ];
 

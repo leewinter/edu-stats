@@ -8,6 +8,7 @@ export interface Course {
   level: string;
   credits: number;
   description?: string | null;
+  capacity?: number | null;
 }
 
 export interface CourseInput {
@@ -17,6 +18,7 @@ export interface CourseInput {
   level: string;
   credits: number;
   description?: string | null;
+  capacity?: number | null;
 }
 
 export interface PagedCourseResult {

@@ -7,29 +7,32 @@ const sampleCourses: CourseTableRow[] = [
     id: "cs101",
     institutionId: "inst-1",
     institutionName: "University of Edinburgh",
-    title: "Computer Science BSc",
-    code: "CS101",
-    level: "Undergraduate",
-    credits: 120
-  },
+  title: "Computer Science BSc",
+  code: "CS101",
+  level: "Undergraduate",
+  credits: 120,
+  capacity: 60
+},
   {
     id: "ds501",
     institutionId: "inst-1",
     institutionName: "University of Edinburgh",
-    title: "Data Science MSc",
-    code: "DS501",
-    level: "Postgraduate",
-    credits: 90
-  },
+  title: "Data Science MSc",
+  code: "DS501",
+  level: "Postgraduate",
+  credits: 90,
+  capacity: 40
+},
   {
     id: "eng401",
     institutionId: "inst-2",
     institutionName: "University of Oxford",
-    title: "Engineering MEng",
-    code: "ENG401",
-    level: "Undergraduate",
-    credits: 140
-  }
+  title: "Engineering MEng",
+  code: "ENG401",
+  level: "Undergraduate",
+  credits: 140,
+  capacity: 80
+}
 ];
 
 const meta: Meta<typeof CoursesTable> = {

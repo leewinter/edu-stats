@@ -45,7 +45,8 @@ public sealed class CoursesController : ControllerBase
             request.Code,
             request.Level,
             request.Credits,
-            request.Description);
+            request.Description,
+            request.Capacity);
 
         var id = await _sender.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetCourses), new { id }, id);
@@ -61,7 +62,8 @@ public sealed class CoursesController : ControllerBase
             request.Code,
             request.Level,
             request.Credits,
-            request.Description);
+            request.Description,
+            request.Capacity);
 
         await _sender.Send(command, cancellationToken);
         return NoContent();
@@ -90,7 +92,8 @@ public sealed class CoursesController : ControllerBase
             s.Code,
             s.ActiveEnrollments,
             s.CompletedEnrollments,
-            s.DroppedEnrollments));
+            s.DroppedEnrollments,
+            s.Capacity));
         return Ok(response);
     }
 }

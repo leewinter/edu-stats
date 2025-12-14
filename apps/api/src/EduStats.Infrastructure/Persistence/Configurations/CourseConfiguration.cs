@@ -28,6 +28,7 @@ public sealed class CourseConfiguration : IEntityTypeConfiguration<Course>
 
         builder.Property(x => x.Description)
             .HasMaxLength(1024);
+        builder.Property(x => x.Capacity);
 
         builder.HasOne(x => x.Institution)
             .WithMany()
