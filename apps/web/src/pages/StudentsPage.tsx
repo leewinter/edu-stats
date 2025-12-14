@@ -22,6 +22,7 @@ import {
 import {
   enrollStudent as enrollStudentApi,
   dropEnrollment,
+  completeEnrollment,
   type CourseEnrollmentStatus
 } from "../api/enrollments";
 import "../App.css";
@@ -81,6 +82,14 @@ const StudentsPage = () => {
     }
   });
 
+  const completeEnrollmentMutation = useMutation({
+    mutationFn: ({ studentId, enrollmentId }: { studentId: string; enrollmentId: string }) =>
+      completeEnrollment(studentId, enrollmentId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["student-enrollments", variables.studentId] });
+    }
+  });
+
   const handleOpenCreate = useCallback(() => {
     setModalState({ mode: "create" });
   }, []);
@@ -122,6 +131,14 @@ const StudentsPage = () => {
   const handleEnrollmentDrop = async (enrollmentId: string) => {
     if (!enrollmentStudent) return;
     await dropEnrollmentMutation.mutateAsync({
+      studentId: enrollmentStudent.id,
+      enrollmentId
+    });
+  };
+
+  const handleEnrollmentComplete = async (enrollmentId: string) => {
+    if (!enrollmentStudent) return;
+    await completeEnrollmentMutation.mutateAsync({
       studentId: enrollmentStudent.id,
       enrollmentId
     });
@@ -227,13 +244,19 @@ const StudentsPage = () => {
         enrollments={enrollmentRows}
         availableCourses={availableCourses}
         enrollmentLoading={enrollmentsLoading}
-        submissionLoading={enrollMutation.isLoading}
+        submissionLoading={
+          enrollMutation.isLoading ||
+          dropEnrollmentMutation.isLoading ||
+          completeEnrollmentMutation.isLoading
+        }
         errorMessage={
           (enrollMutation.error as Error | null)?.message ??
-          (dropEnrollmentMutation.error as Error | null)?.message
+          (dropEnrollmentMutation.error as Error | null)?.message ??
+          (completeEnrollmentMutation.error as Error | null)?.message
         }
         onSubmit={handleEnrollmentSubmit}
         onDropEnrollment={handleEnrollmentDrop}
+        onCompleteEnrollment={handleEnrollmentComplete}
         onClose={handleCloseEnrollments}
       />
     </>

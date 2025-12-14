@@ -20,6 +20,7 @@ export interface StudentEnrollmentManagerProps {
   errorMessage?: string;
   onSubmit: (courseId: string) => void;
   onDropEnrollment?: (enrollmentId: string) => void;
+  onCompleteEnrollment?: (enrollmentId: string) => void;
   onClose: () => void;
 }
 
@@ -33,6 +34,7 @@ export const StudentEnrollmentManager = ({
   errorMessage,
   onSubmit,
   onDropEnrollment,
+  onCompleteEnrollment,
   onClose
 }: StudentEnrollmentManagerProps) => {
   const [form] = Form.useForm<{ courseId: string }>();
@@ -67,21 +69,39 @@ export const StudentEnrollmentManager = ({
       }
     ];
 
-    if (onDropEnrollment) {
+    if (onDropEnrollment || onCompleteEnrollment) {
       base.push({
         title: "Actions",
         key: "actions",
         align: "right",
-        render: (_, record) => (
-          <Button
-            type="link"
-            danger
-            disabled={record.status?.toLowerCase() === "dropped"}
-            onClick={() => onDropEnrollment(record.id)}
-          >
-            Remove
-          </Button>
-        )
+        render: (_, record) => {
+          const isDropped = record.status?.toLowerCase() === "dropped";
+          const isCompleted = record.status?.toLowerCase() === "completed";
+
+          return (
+            <Space size="small">
+              {onCompleteEnrollment && (
+                <Button
+                  type="link"
+                  disabled={isDropped || isCompleted}
+                  onClick={() => onCompleteEnrollment(record.id)}
+                >
+                  Mark completed
+                </Button>
+              )}
+              {onDropEnrollment && (
+                <Button
+                  type="link"
+                  danger
+                  disabled={isDropped}
+                  onClick={() => onDropEnrollment(record.id)}
+                >
+                  Remove
+                </Button>
+              )}
+            </Space>
+          );
+        }
       });
     }
 

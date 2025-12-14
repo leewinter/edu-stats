@@ -31,7 +31,8 @@ const meta: Meta<typeof StudentEnrollmentManager> = {
       { value: "cs101", label: "Computer Science BSc" },
       { value: "ds501", label: "Data Science MSc" }
     ],
-    onDropEnrollment: fn()
+    onDropEnrollment: fn(),
+    onCompleteEnrollment: fn()
   }
 };
 
