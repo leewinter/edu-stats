@@ -43,10 +43,17 @@ jobs:
         working-directory: packages/ui
         run: npm run build-storybook
 
+      - name: Prepare site directory
+        working-directory: packages/ui
+        run: |
+          rm -rf storybook-dist
+          mkdir -p storybook-dist/storybook
+          cp -R storybook-static/* storybook-dist/storybook/
+
       - name: Upload Storybook artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: packages/ui/storybook-static
+          path: packages/ui/storybook-dist
 
   deploy:
     needs: build
