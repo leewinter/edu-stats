@@ -12,6 +12,10 @@ export interface NavigationHeaderProps {
   menuItems?: MenuProps["items"];
   selectedKey?: string;
   extra?: ReactNode;
+  logoSrc?: string;
+  logoAlt?: string;
+  logoHref?: string;
+  onLogoClick?: () => void;
   onSelect?: (key: string) => void;
 }
 
@@ -21,6 +25,10 @@ export const NavigationHeader = ({
   menuItems,
   selectedKey,
   extra,
+  logoSrc,
+  logoAlt,
+  logoHref,
+  onLogoClick,
   onSelect
 }: NavigationHeaderProps) => {
   const normalizedMenuItems: MenuItems = Array.isArray(menuItems)
@@ -52,17 +60,34 @@ export const NavigationHeader = ({
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
-            minWidth: 220,
-            gap: "0.15rem"
+            flexDirection: isCompact ? "column" : "row",
+            alignItems: isCompact ? "flex-start" : "center",
+            gap: "0.75rem",
+            minWidth: 220
           }}
         >
-          <Typography.Title level={3} style={{ color: "#fff", margin: 0 }}>
-            {title}
-          </Typography.Title>
-          {subtitle ? (
-            <Typography.Text style={{ color: "#d6e4ff" }}>{subtitle}</Typography.Text>
+          {logoSrc ? (
+            <LogoMark
+              logoSrc={logoSrc}
+              logoAlt={logoAlt ?? `${title} logo`}
+              logoHref={logoHref}
+              onLogoClick={onLogoClick}
+            />
           ) : null}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.15rem"
+            }}
+          >
+            <Typography.Title level={3} style={{ color: "#fff", margin: 0 }}>
+              {title}
+            </Typography.Title>
+            {subtitle ? (
+              <Typography.Text style={{ color: "#d6e4ff" }}>{subtitle}</Typography.Text>
+            ) : null}
+          </div>
         </div>
         <div
           style={{
@@ -129,3 +154,50 @@ function getSelectedMenuLabel(items: MenuItems, selectedKey?: string) {
 function hasKey(item: MenuItem): item is Extract<MenuItem, { key: Key }> {
   return Boolean(item && typeof item === "object" && "key" in item);
 }
+
+type LogoMarkProps = {
+  logoSrc: string;
+  logoAlt: string;
+  logoHref?: string;
+  onLogoClick?: () => void;
+};
+
+const LogoMark = ({ logoSrc, logoAlt, logoHref, onLogoClick }: LogoMarkProps) => {
+  const image = (
+    <img
+      src={logoSrc}
+      alt={logoAlt}
+      style={{ height: 48, width: "auto", display: "block" }}
+      loading="lazy"
+    />
+  );
+
+  if (onLogoClick) {
+    return (
+      <button
+        type="button"
+        onClick={onLogoClick}
+        style={{
+          background: "transparent",
+          border: "none",
+          padding: 0,
+          cursor: "pointer",
+          lineHeight: 0
+        }}
+        aria-label={logoAlt}
+      >
+        {image}
+      </button>
+    );
+  }
+
+  if (logoHref) {
+    return (
+      <a href={logoHref} style={{ lineHeight: 0, display: "inline-flex" }} aria-label={logoAlt}>
+        {image}
+      </a>
+    );
+  }
+
+  return <span style={{ lineHeight: 0 }}>{image}</span>;
+};
