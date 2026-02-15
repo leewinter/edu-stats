@@ -159,6 +159,16 @@ Future steps will add scripted data seeds per table, CI hooks for imperative com
   docker compose run --rm --profile migrate migrator
   ```
 - API auto-migration is opt-in via `Database__RunMigrationsOnStartup=true` (already wired in `docker-compose.yml`); remove/override the env var if you prefer manual control.
+- **Reset seed data via API** (useful for nightly refreshes)
+  - Configure `Maintenance__ResetSeedToken` in the API environment (or `Maintenance:ResetSeedToken` in `appsettings.json`).
+  - PowerShell example:
+    ```powershell
+    Invoke-WebRequest -Method POST -Uri "http://localhost:8081/api/maintenance/reset-seed" -Headers @{ "X-Reset-Token" = "change-me" }
+    ```
+  - cURL example:
+    ```bash
+    curl -X POST http://localhost:8081/api/maintenance/reset-seed -H "X-Reset-Token: change-me"
+    ```
 
 ### Messaging
 

@@ -249,6 +249,23 @@ public static class SeedData
         await context.SaveChangesAsync(cancellationToken);
     }
 
+    public static async Task ResetAsync(ApplicationDbContext context, CancellationToken cancellationToken = default)
+    {
+        await context.Database.ExecuteSqlRawAsync(
+            """
+            TRUNCATE TABLE
+              course_enrollments,
+              students,
+              courses,
+              institution_addresses,
+              institutions
+            RESTART IDENTITY CASCADE;
+            """,
+            cancellationToken);
+
+        await SeedAsync(context, cancellationToken);
+    }
+
     private static Institution CreateInstitutionWithAddress(InstitutionSeed seed)
     {
         var institution = new Institution(seed.Name, seed.Enrollment);
