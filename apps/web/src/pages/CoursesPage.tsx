@@ -85,7 +85,7 @@ const CoursesPage = () => {
     }
   };
 
-  const isSubmitting = createCourseMutation.isLoading || updateCourseMutation.isLoading;
+  const isSubmitting = createCourseMutation.isPending || updateCourseMutation.isPending;
   const mutationError =
     (createCourseMutation.error as Error | null) ??
     (updateCourseMutation.error as Error | null);

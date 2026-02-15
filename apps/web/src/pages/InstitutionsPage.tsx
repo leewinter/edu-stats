@@ -71,7 +71,7 @@ const InstitutionsPage = () => {
     }
   };
 
-  const isSubmitting = createMutation.isLoading || updateMutation.isLoading;
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
   const mutationError =
     (createMutation.error as Error | null) ?? (updateMutation.error as Error | null);
   const mutationErrorMessage = mutationError?.message;

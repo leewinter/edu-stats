@@ -151,7 +151,7 @@ const StudentsPage = () => {
     });
   };
 
-  const isSubmitting = createStudentMutation.isLoading || updateStudentMutation.isLoading;
+  const isSubmitting = createStudentMutation.isPending || updateStudentMutation.isPending;
   const mutationError =
     createStudentMutation.error ?? updateStudentMutation.error;
   const mutationErrorMessage = mutationError ? getErrorMessage(mutationError) : undefined;
@@ -268,9 +268,9 @@ const StudentsPage = () => {
         availableCourses={availableCourses}
         enrollmentLoading={enrollmentsLoading}
         submissionLoading={
-          enrollMutation.isLoading ||
-          dropEnrollmentMutation.isLoading ||
-          completeEnrollmentMutation.isLoading
+          enrollMutation.isPending ||
+          dropEnrollmentMutation.isPending ||
+          completeEnrollmentMutation.isPending
         }
         errorMessage={
           getErrorMessage(

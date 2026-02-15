@@ -128,14 +128,14 @@ function App() {
   };
 
   const isSubmitting =
-    createInstitutionMutation.isLoading || updateInstitutionMutation.isLoading;
+    createInstitutionMutation.isPending || updateInstitutionMutation.isPending;
   const mutationError =
     (createInstitutionMutation.error as Error | null) ??
     (updateInstitutionMutation.error as Error | null);
   const mutationErrorMessage = mutationError?.message;
 
   const isCourseSubmitting =
-    createCourseMutation.isLoading || updateCourseMutation.isLoading;
+    createCourseMutation.isPending || updateCourseMutation.isPending;
   const courseMutationError =
     (createCourseMutation.error as Error | null) ??
     (updateCourseMutation.error as Error | null);
