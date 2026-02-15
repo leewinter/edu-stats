@@ -10,8 +10,8 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsup src/index.ts --dts --format cjs,esm --clean",
-    "dev": "tsup src/index.ts --dts --format cjs,esm --watch",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
