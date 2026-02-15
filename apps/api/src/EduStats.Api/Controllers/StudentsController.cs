@@ -12,7 +12,9 @@ using EduStats.Application.Students.Commands.UpdateStudent;
 using EduStats.Application.Students.Dtos;
 using EduStats.Application.Students.Queries.GetStudents;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 
 namespace EduStats.Api.Controllers;
 
@@ -40,6 +42,7 @@ public sealed class StudentsController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<Guid>> CreateStudent([FromBody] CreateStudentRequest request, CancellationToken cancellationToken)
     {
         var command = new CreateStudentCommand(
@@ -50,12 +53,20 @@ public sealed class StudentsController : ControllerBase
             request.EnrollmentYear,
             request.CourseFocus);
 
-        var id = await _sender.Send(command, cancellationToken);
-        return CreatedAtAction(nameof(GetStudents), new { id }, id);
+        try
+        {
+            var id = await _sender.Send(command, cancellationToken);
+            return CreatedAtAction(nameof(GetStudents), new { id }, id);
+        }
+        catch (DbUpdateException ex) when (IsStudentEmailConflict(ex))
+        {
+            return Conflict(new { message = "Student with this email already exists." });
+        }
     }
 
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> UpdateStudent(Guid id, [FromBody] UpdateStudentRequest request, CancellationToken cancellationToken)
     {
         var command = new UpdateStudentCommand(
@@ -67,8 +78,15 @@ public sealed class StudentsController : ControllerBase
             request.EnrollmentYear,
             request.CourseFocus);
 
-        await _sender.Send(command, cancellationToken);
-        return NoContent();
+        try
+        {
+            await _sender.Send(command, cancellationToken);
+            return NoContent();
+        }
+        catch (DbUpdateException ex) when (IsStudentEmailConflict(ex))
+        {
+            return Conflict(new { message = "Student with this email already exists." });
+        }
     }
 
     [HttpDelete("{id:guid}")]
@@ -113,4 +131,9 @@ public sealed class StudentsController : ControllerBase
         await _sender.Send(new CompleteStudentEnrollmentCommand(studentId, enrollmentId), cancellationToken);
         return NoContent();
     }
+
+    private static bool IsStudentEmailConflict(DbUpdateException ex) =>
+        ex.InnerException is PostgresException postgresException &&
+        postgresException.SqlState == PostgresErrorCodes.UniqueViolation &&
+        postgresException.ConstraintName == "IX_students_Email";
 }

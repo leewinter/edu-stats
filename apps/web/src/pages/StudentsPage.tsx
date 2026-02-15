@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { Alert, Button, Space, Typography } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import {
   StudentsTable,
   StudentFormModal,
@@ -152,8 +153,8 @@ const StudentsPage = () => {
 
   const isSubmitting = createStudentMutation.isLoading || updateStudentMutation.isLoading;
   const mutationError =
-    (createStudentMutation.error as Error | null) ?? (updateStudentMutation.error as Error | null);
-  const mutationErrorMessage = mutationError?.message;
+    createStudentMutation.error ?? updateStudentMutation.error;
+  const mutationErrorMessage = mutationError ? getErrorMessage(mutationError) : undefined;
 
   const institutionOptions = (institutionData?.items ?? []).map((inst) => ({
     value: inst.id,
@@ -272,9 +273,9 @@ const StudentsPage = () => {
           completeEnrollmentMutation.isLoading
         }
         errorMessage={
-          (enrollMutation.error as Error | null)?.message ??
-          (dropEnrollmentMutation.error as Error | null)?.message ??
-          (completeEnrollmentMutation.error as Error | null)?.message
+          getErrorMessage(
+            enrollMutation.error ?? dropEnrollmentMutation.error ?? completeEnrollmentMutation.error
+          )
         }
         onSubmit={handleEnrollmentSubmit}
         onDropEnrollment={handleEnrollmentDrop}
@@ -324,4 +325,19 @@ function formatEnrollmentStatus(status: CourseEnrollmentStatus) {
     default:
       return "Active";
   }
+}
+
+function getErrorMessage(error: unknown) {
+  if (!error) return undefined;
+
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data;
+    if (typeof data === "string") return data;
+    if (data && typeof data === "object" && "message" in data) {
+      const message = (data as { message?: unknown }).message;
+      if (typeof message === "string") return message;
+    }
+  }
+
+  return error instanceof Error ? error.message : "Something went wrong.";
 }
