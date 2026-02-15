@@ -141,16 +141,17 @@ function App() {
     (updateCourseMutation.error as Error | null);
   const courseMutationErrorMessage = courseMutationError?.message;
 
+  const institutionItems = Array.isArray(data?.items) ? data.items : [];
   const totalInstitutions = data?.totalCount ?? 0;
   const totalEnrollment = useMemo(
-    () => data?.items.reduce((acc, inst) => acc + inst.enrollment, 0) ?? 0,
-    [data?.items]
+    () => institutionItems.reduce((acc, inst) => acc + inst.enrollment, 0),
+    [institutionItems]
   );
   const institutionLookup = useMemo(() => {
     const map = new Map<string, string>();
-    (data?.items ?? []).forEach((inst) => map.set(inst.id, inst.name));
+    institutionItems.forEach((inst) => map.set(inst.id, inst.name));
     return map;
-  }, [data?.items]);
+  }, [institutionItems]);
 
   const courseRows = useMemo(
     () =>
@@ -209,7 +210,7 @@ function App() {
             />
           )}
           <InstitutionsTable
-            institutions={data?.items ?? []}
+            institutions={institutionItems}
             loading={isLoading}
             onEdit={handleOpenEdit}
           />
@@ -252,7 +253,7 @@ function App() {
         mode={courseModalState?.mode ?? "create"}
         loading={isCourseSubmitting}
         errorMessage={courseMutationErrorMessage}
-        institutionOptions={(data?.items ?? []).map((inst) => ({
+        institutionOptions={institutionItems.map((inst) => ({
           value: inst.id,
           label: inst.name
         }))}
