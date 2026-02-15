@@ -24,7 +24,7 @@ services:
       MessageBroker__VirtualHost: /
       Cache__Host: redis:6379
     ports:
-      - "8080:8080"
+      - "${API_PORT}:8080"
     restart: unless-stopped
 
   client:
@@ -36,9 +36,9 @@ services:
       api:
         condition: service_started
     environment:
-      VITE_API_BASE_URL: http://localhost:8080
+      VITE_API_BASE_URL: http://localhost:${API_PORT}
     ports:
-      - "4173:4173"
+      - "${WEB_PORT}:4173"
     restart: unless-stopped
 
   postgres:
@@ -48,7 +48,7 @@ services:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: app
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U app -d edu_stats"]
       interval: 10s
@@ -61,8 +61,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.13-management
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
     environment:
       RABBITMQ_DEFAULT_USER: app
       RABBITMQ_DEFAULT_PASS: app
@@ -71,7 +71,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
     restart: unless-stopped
 
   migrator:
@@ -93,7 +93,7 @@ services:
     profiles:
       - portainer
     ports:
-      - "9000:9000"
+      - "${PORTAINER_PORT}:9000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
