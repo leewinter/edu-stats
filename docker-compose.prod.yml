@@ -1,0 +1,81 @@
+version: "3.9"
+
+services:
+  api:
+    image: registry.stoneycroft.leewinter.net/edu-stats/api:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Main: Host=postgres;Port=5432;Database=edu_stats;Username=app;Password=app
+      Database__RunMigrationsOnStartup: "true"
+      MessageBroker__HostName: rabbitmq
+      MessageBroker__Port: 5672
+      MessageBroker__UserName: app
+      MessageBroker__Password: app
+      MessageBroker__VirtualHost: /
+      Cache__Host: redis:6379
+    ports:
+      - "${API_PORT}:8080"
+    restart: unless-stopped
+
+  client:
+    image: registry.stoneycroft.leewinter.net/edu-stats/web:latest
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      VITE_API_BASE_URL: http://localhost:${API_PORT}
+    ports:
+      - "${WEB_PORT}:4173"
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: edu_stats
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d edu_stats"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: app
+      RABBITMQ_DEFAULT_PASS: app
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT}:6379"
+    restart: unless-stopped
+
+  migrator:
+    image: registry.stoneycroft.leewinter.net/edu-stats/api-migrator:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__Main: Host=postgres;Port=5432;Database=edu_stats;Username=app;Password=app
+    profiles:
+      - migrate
+
+volumes:
+  postgres_data:
