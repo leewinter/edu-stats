@@ -13,10 +13,11 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     resolve: {
-      alias: {
-        "@edu-stats/ui": path.resolve(__dirname, "../../packages/ui/dist")
-      }
+    alias: {
+      "@edu-stats/ui": path.resolve(__dirname, "../../packages/ui/dist")
     },
+    dedupe: ["react", "react-dom"]
+  },
     server: {
       port: 4173,
       host: "0.0.0.0",
